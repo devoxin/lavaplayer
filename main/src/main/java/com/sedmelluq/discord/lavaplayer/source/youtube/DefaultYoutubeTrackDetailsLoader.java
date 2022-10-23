@@ -135,7 +135,7 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
 
       throw new FriendlyException(unplayableReason, COMMON, null);
     } else if ("LOGIN_REQUIRED".equals(status)) {
-      String loginReason = statusBlock.get("reason").text();
+      String loginReason = statusBlock.get("reason").safeText();
 
       if (loginReason.contains("This video is private")) {
         throw new FriendlyException("This is a private video.", COMMON, null);
