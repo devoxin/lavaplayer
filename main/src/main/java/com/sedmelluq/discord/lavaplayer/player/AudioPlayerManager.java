@@ -49,6 +49,15 @@ public interface AudioPlayerManager {
   void registerSourceManager(AudioSourceManager sourceManager);
 
   /**
+   * @param sourceManagers The source managers to register, which will be used for subsequent loadItem calls
+   */
+  default void registerSourceManagers(AudioSourceManager... sourceManagers) {
+    for (AudioSourceManager sourceManager : sourceManagers) {
+      registerSourceManager(sourceManager);
+    }
+  }
+
+  /**
    * Shortcut for accessing a source manager of a certain class.
    * @param klass The class of the source manager to return.
    * @param <T> The class of the source manager.
