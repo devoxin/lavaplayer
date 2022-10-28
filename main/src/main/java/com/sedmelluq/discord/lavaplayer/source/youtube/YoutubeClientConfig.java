@@ -1,65 +1,68 @@
 package com.sedmelluq.discord.lavaplayer.source.youtube;
 
 import com.grack.nanojson.JsonWriter;
+import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class YoutubeClientConfig {
-    public static final String ANDROID_CLIENT_VERSION = "17.36.4"; // 17.39.35
+    public static final String ANDROID_CLIENT_VERSION = "17.29.34"; // 17.36.4, 17.39.35
     public static final AndroidVersion DEFAULT_ANDROID_VERSION = AndroidVersion.ANDROID_11;
 
     // Clients
     public static YoutubeClientConfig ANDROID = new YoutubeClientConfig()
-            // yes this is a weird way of doing it but the logic behind it is that this config can be overwritten by users
-            // if needed. This allows users to also override the user agent string which is used by the YoutubeHttpContextFilter.
-            // Android %s; US)
-            .withUserAgent(String.format("com.google.android.youtube/%s (Linux; U; Android %s) gzip", ANDROID_CLIENT_VERSION, DEFAULT_ANDROID_VERSION.getOsVersion()))
-            .withClientName("ANDROID")
-            .withClientField("clientVersion", ANDROID_CLIENT_VERSION)
-            .withClientField("androidSdkVersion", DEFAULT_ANDROID_VERSION.getSdkVersion())
-            .withClientField("osName", "Android")
-            .withClientField("osVersion", DEFAULT_ANDROID_VERSION.getOsVersion());
-//            .withClientField("platform", "MOBILE")
-//            .withClientField("hl", "en-US")
-//            .withClientField("gl", "US")
-//            .withUserField("lockedSafetyMode", false);
+        .withApiKey(YoutubeConstants.INNERTUBE_ANDROID_API_KEY)
+        .withUserAgent(String.format("com.google.android.youtube/%s (Linux; U; Android %s) gzip", ANDROID_CLIENT_VERSION, DEFAULT_ANDROID_VERSION.getOsVersion()))
+        .withClientName("ANDROID")
+        .withClientField("clientVersion", ANDROID_CLIENT_VERSION)
+        .withClientField("androidSdkVersion", DEFAULT_ANDROID_VERSION.getSdkVersion());
+        //.withClientField("osName", "Android")
+        //.withClientField("osVersion", DEFAULT_ANDROID_VERSION.getOsVersion());
+        //.withClientField("platform", "MOBILE")
+        //.withClientField("hl", "en-US")
+        //.withClientField("gl", "US")
+        //.withUserField("lockedSafetyMode", false);
 
     public static YoutubeClientConfig IOS = new YoutubeClientConfig()
-            .withUserAgent("com.google.ios.youtube/17.36.4 (iPhone14,5; U; CPU iOS 15_6 like Mac OS X)")
-            .withClientName("IOS")
-            .withClientField("clientVersion", "17.36.4") // 17.39.4, 17.40.5
-            .withClientField("deviceMake", "Apple")
-            .withClientField("deviceModel", "iPhone14,5")
-            .withClientField("platform", "MOBILE")
-            .withClientField("osName", "iOS")
-            .withClientField("osVersion", "15.6.0.19G71");
-//            .withClientField("hl", "en-US")
-//            .withClientField("gl", "US")
-//            .withUserField("lockedSafetyMode", false)
+        .withApiKey(YoutubeConstants.INNERTUBE_IOS_API_KEY)
+        .withUserAgent("com.google.ios.youtube/17.36.4 (iPhone14,5; U; CPU iOS 15_6 like Mac OS X)")
+        .withClientName("IOS")
+        .withClientField("clientVersion", "17.36.4") // 17.39.4, 17.40.5
+        .withClientField("osName", "iOS")
+        .withClientField("osVersion", "15.6.0.19G71")
+        .withClientField("deviceMake", "Apple")
+        .withClientField("deviceModel", "iPhone14,5")
+        .withClientField("platform", "MOBILE");
+        //.withClientField("hl", "en-US")
+        //.withClientField("gl", "US")
+        //.withUserField("lockedSafetyMode", false)
 
     public static YoutubeClientConfig TV_EMBEDDED = new YoutubeClientConfig()
-            .withClientName("TVHTML5_SIMPLY_EMBEDDED_PLAYER")
-            .withClientField("clientVersion", "2.0");
-            // platform TV
+        .withApiKey(YoutubeConstants.INNERTUBE_WEB_API_KEY) //.withApiKey(INNERTUBE_TV_API_KEY) // Requires header (Referer tv.youtube.com)
+        .withClientName("TVHTML5_SIMPLY_EMBEDDED_PLAYER")
+        .withClientField("clientVersion", "2.0");
+        //.withClientField("platform", "TV");
 
     public static YoutubeClientConfig WEB = new YoutubeClientConfig()
-            .withClientName("WEB")
-            .withClientField("clientVersion", "2.20220801.00.00");
-            // platform DESKTOP
+        .withApiKey(YoutubeConstants.INNERTUBE_WEB_API_KEY)
+        .withClientName("WEB")
+        .withClientField("clientVersion", "2.20220801.00.00");
+        //.withClientField("platform", "DESKTOP");
+        // platform DESKTOP
 
     public static YoutubeClientConfig MUSIC = new YoutubeClientConfig()
-            .withClientName("WEB_REMIX")
-            .withClientField("clientVersion", "1.20220727.01.00");
+        .withApiKey(YoutubeConstants.INNERTUBE_MUSIC_API_KEY) // Requires header (Referer music.youtube.com)
+        .withClientName("WEB_REMIX")
+        .withClientField("clientVersion", "1.20220727.01.00"); // 0.1
 
     // root.cpn => content playback nonce, a-zA-Z0-9-_ (16 characters)
     // contextPlaybackContext.refer => url (video watch URL?)
 
     private String name;
-
     private String userAgent;
-
+    private String apiKey;
     private final Map<String, Object> root;
 
     public YoutubeClientConfig() {
@@ -95,6 +98,15 @@ public class YoutubeClientConfig {
 
     public String getUserAgent() {
         return this.userAgent;
+    }
+
+    public YoutubeClientConfig withApiKey(String apiKey) {
+        this.apiKey = apiKey;
+        return this;
+    }
+
+    public String getApiKey() {
+        return this.apiKey;
     }
 
     public YoutubeClientConfig withClientDefaultScreenParameters() {
@@ -134,6 +146,14 @@ public class YoutubeClientConfig {
         Map<String, Object> context = (Map<String, Object>) root.computeIfAbsent("context", __ -> new HashMap<String, Object>());
         Map<String, Object> user = (Map<String, Object>) context.computeIfAbsent("user", __ -> new HashMap<String, Object>());
         user.put(key, value);
+        return this;
+    }
+
+    public YoutubeClientConfig setAttributes(HttpInterface httpInterface) {
+        if (userAgent != null) {
+            httpInterface.getContext().setAttribute(YoutubeHttpContextFilter.ATTRIBUTE_USER_AGENT_SPECIFIED, userAgent);
+        }
+
         return this;
     }
 

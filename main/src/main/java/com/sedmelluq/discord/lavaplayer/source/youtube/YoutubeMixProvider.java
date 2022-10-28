@@ -43,11 +43,11 @@ public class YoutubeMixProvider implements YoutubeMixLoader {
     List<AudioTrack> tracks = new ArrayList<>();
 
     HttpPost post = new HttpPost(NEXT_URL);
-    String json = YoutubeClientConfig.ANDROID.copy()
-            .withRootField("videoId", selectedVideoId)
-            .withRootField("playlistId", mixId)
-            .toJsonString();
-    StringEntity payload = new StringEntity(json, "UTF-8");
+    YoutubeClientConfig clientConfig = YoutubeClientConfig.ANDROID.copy()
+        .withRootField("videoId", selectedVideoId)
+        .withRootField("playlistId", mixId)
+        .setAttributes(httpInterface);
+    StringEntity payload = new StringEntity(clientConfig.toJsonString(), "UTF-8");
     post.setEntity(payload);
 
     try (CloseableHttpResponse response = httpInterface.execute(post)) {
@@ -55,9 +55,9 @@ public class YoutubeMixProvider implements YoutubeMixLoader {
 
       JsonBrowser body = JsonBrowser.parse(response.getEntity().getContent());
       JsonBrowser playlist = body.get("contents")
-              .get("singleColumnWatchNextResults")
-              .get("playlist")
-              .get("playlist");
+          .get("singleColumnWatchNextResults")
+          .get("playlist")
+          .get("playlist");
 
       JsonBrowser title = playlist.get("title");
 

@@ -50,12 +50,11 @@ public class YoutubeSearchProvider implements YoutubeSearchResultLoader {
 
     try (HttpInterface httpInterface = httpInterfaceManager.getInterface()) {
       HttpPost post = new HttpPost(SEARCH_URL);
-      String json = YoutubeClientConfig.ANDROID.copy()
-              .withRootField("query", query)
-              .withRootField("params", "EgIQAQ==")
-              //.withClientDefaultScreenParameters()
-              .toJsonString();
-      StringEntity payload = new StringEntity(json, "UTF-8");
+      YoutubeClientConfig clientConfig = YoutubeClientConfig.ANDROID.copy()
+          .withRootField("query", query)
+          .withRootField("params", YoutubeConstants.SEARCH_PARAMS)
+          .setAttributes(httpInterface);
+      StringEntity payload = new StringEntity(clientConfig.toJsonString(), "UTF-8");
       post.setEntity(payload);
 
       try (CloseableHttpResponse response = httpInterface.execute(post)) {

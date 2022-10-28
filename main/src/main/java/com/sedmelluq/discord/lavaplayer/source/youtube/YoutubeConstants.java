@@ -1,22 +1,30 @@
 package com.sedmelluq.discord.lavaplayer.source.youtube;
 
 public class YoutubeConstants {
+    // Keys
+    static final String INNERTUBE_WEB_API_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8";
+    static final String INNERTUBE_ANDROID_API_KEY = "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
+    static final String INNERTUBE_IOS_API_KEY = "AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc";
+    static final String INNERTUBE_TV_API_KEY = "AIzaSyD-L7DIyuMgBk-B4DYmjJZ5UG-D6Y-vkMc";
+    static final String INNERTUBE_MUSIC_API_KEY = "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30";
+
+    static final String SEARCH_PARAMS = "EgIQAQ==";
+    static final String SEARCH_MUSIC_PARAMS = "Eg-KAQwIARAAGAAgACgAMABqChADEAQQCRAFEAo=";
 
     // YouTube constants
     static final String YOUTUBE_ORIGIN = "https://www.youtube.com";
     static final String YOUTUBE_API_ORIGIN = "https://youtubei.googleapis.com";
     static final String BASE_URL = YOUTUBE_API_ORIGIN + "/youtubei/v1";
-    static final String INNERTUBE_API_KEY = "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w";
 
-    static final String SEARCH_URL = BASE_URL + "/search?key=" + INNERTUBE_API_KEY;
+    static final String SEARCH_URL = BASE_URL + "/search?key=" + INNERTUBE_ANDROID_API_KEY;
     static final String PLAYER_URL = BASE_URL + "/player";
     static final String BROWSE_URL = BASE_URL + "/browse";
     static final String NEXT_URL = BASE_URL + "/next";
+    static final String VISITOR_ID_URL = BASE_URL + "/visitor_id";
 
     // YouTube Music constants
     static final String MUSIC_BASE_URL = "https://music.youtube.com/youtubei/v1";
-    static final String MUSIC_INNERTUBE_API_KEY = "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30";
-    static final String MUSIC_SEARCH_URL = MUSIC_BASE_URL + "/search?key=" + MUSIC_INNERTUBE_API_KEY;
+    static final String MUSIC_SEARCH_URL = MUSIC_BASE_URL + "/search?key=" + INNERTUBE_MUSIC_API_KEY;
 
     // YouTube TV auth constants
     static final String TV_AUTH_BASE_URL = YOUTUBE_ORIGIN + "/o/oauth2";

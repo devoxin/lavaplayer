@@ -22,7 +22,7 @@ public class FormatCipherTest {
                 .withClientName("WEB")
                 .withClientField("clientVersion", "2.20220918");
 
-        YoutubeTrackDetails details = yt.getTrackDetailsLoader().loadDetails(yt.getHttpInterface(), "dNUHmLHkKXI", true, yt, config);
+        YoutubeTrackDetails details = yt.getTrackDetailsLoader().loadDetails(yt.getHttpInterface(), "dNUHmLHkKXI", true, yt);
         List<YoutubeTrackFormat> formats = details.getFormats(yt.getHttpInterface(), yt.getSignatureResolver());
 
         formats.stream()

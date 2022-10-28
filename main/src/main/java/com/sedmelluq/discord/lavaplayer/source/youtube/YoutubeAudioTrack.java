@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +29,6 @@ import static com.sedmelluq.discord.lavaplayer.tools.Units.CONTENT_LENGTH_UNKNOW
 public class YoutubeAudioTrack extends DelegatedAudioTrack {
   private static final Logger log = LoggerFactory.getLogger(YoutubeAudioTrack.class);
 
-  public static YoutubeClientConfig[] CLIENT_CONFIG_SEQUENCE = new YoutubeClientConfig[] { YoutubeClientConfig.ANDROID, YoutubeClientConfig.IOS };
-
   private final YoutubeAudioSourceManager sourceManager;
 
   /**
@@ -46,39 +43,31 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
 
   @Override
   public void process(LocalAudioTrackExecutor localExecutor) throws Exception {
-    FormatWithUrl format = loadBestFormatWithUrl(null);
+    FormatWithUrl format = loadBestFormatWithUrl();
     log.debug("Starting track from URL: {}", format.signedUrl);
 
     if (trackInfo.isStream || format.details.getContentLength() == CONTENT_LENGTH_UNKNOWN) {
       processStream(localExecutor, format); // perhaps this should be using the interface too?
     } else {
-      try {
-        processStatic(localExecutor, format);
-      } catch (RuntimeException e) {
-        if (!e.getMessage().equals("Not success status code: 403")) {
-          throw e;
-        }
-
-        processStaticWithClientRetry(localExecutor);
-      }
+      processStatic(localExecutor, format);
     }
   }
 
-  private void processStaticWithClientRetry(LocalAudioTrackExecutor localExecutor) throws Exception {
-    for (int i = 0; i < CLIENT_CONFIG_SEQUENCE.length; i++) {
-      log.warn("Encountered 403 whilst trying to play {}, retrying with client {}", this.trackInfo.identifier, CLIENT_CONFIG_SEQUENCE[i].getName());
-      FormatWithUrl format = loadBestFormatWithUrl(CLIENT_CONFIG_SEQUENCE[i]);
-
-      try {
-        processStatic(localExecutor, format);
-        return;
-      } catch (RuntimeException e) {
-        if (!e.getMessage().equals("Not success status code: 403") || i == CLIENT_CONFIG_SEQUENCE.length - 1) {
-          throw e;
-        }
-      }
-    }
-  }
+//  private void processStaticWithClientRetry(LocalAudioTrackExecutor localExecutor) throws Exception {
+//    for (int i = 0; i < CLIENT_CONFIG_SEQUENCE.length; i++) {
+//      log.warn("Encountered 403 whilst trying to play {}, retrying with client {}", this.trackInfo.identifier, CLIENT_CONFIG_SEQUENCE[i].getName());
+//      FormatWithUrl format = loadBestFormatWithUrl(CLIENT_CONFIG_SEQUENCE[i]);
+//
+//      try {
+//        processStatic(localExecutor, format);
+//        return;
+//      } catch (RuntimeException e) {
+//        if (!e.getMessage().equals("Not success status code: 403") || i == CLIENT_CONFIG_SEQUENCE.length - 1) {
+//          throw e;
+//        }
+//      }
+//    }
+//  }
 
 //  private void processWithFormat(LocalAudioTrackExecutor localExecutor, HttpInterface httpInterface, FormatWithUrl format) throws Exception {
 //    for (int i = MAX_RETRIES; i > 0; i--) {
@@ -119,10 +108,10 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
     }
   }
 
-  private FormatWithUrl loadBestFormatWithUrl(YoutubeClientConfig clientConfig) throws Exception {
+  private FormatWithUrl loadBestFormatWithUrl() throws Exception {
     try (HttpInterface httpInterface = sourceManager.getHttpInterface()) {
       YoutubeTrackDetails details = sourceManager.getTrackDetailsLoader()
-              .loadDetails(httpInterface, getIdentifier(), true, sourceManager, clientConfig);
+              .loadDetails(httpInterface, getIdentifier(), true, sourceManager);
 
       // If the error reason is "Video unavailable" details will return null
       if (details == null) {

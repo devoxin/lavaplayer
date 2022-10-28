@@ -62,14 +62,15 @@ public class YoutubeHttpContextFilter extends BaseYoutubeHttpContextFilter {
     retryCounter.handleUpdate(context, isRepetition);
 
     if (tokenTracker.isTokenFetchContext(context)) {
-      // Used for fetching access token, let's not recurse.
+      // Used for fetching access token or visitor id, let's not recurse.
       return;
     }
 
-    String clientUserAgent = context.getAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED, String.class);
-    if (clientUserAgent != null) {
-      log.debug("Applying user-agent header \"{}\"", clientUserAgent);
-      request.setHeader("user-agent", clientUserAgent);
+    String userAgent = context.getAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED, String.class);
+    if (context.getAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED) != null) {
+      String visitorId = tokenTracker.updateVisitorId();
+      request.setHeader("User-Agent", userAgent);
+      request.setHeader("X-Goog-Visitor-Id", visitorId);
       context.removeAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED);
     }
 
@@ -79,7 +80,7 @@ public class YoutubeHttpContextFilter extends BaseYoutubeHttpContextFilter {
     } else {
       try {
         URI uri = new URIBuilder(request.getURI())
-            .setParameter("key", YoutubeConstants.INNERTUBE_API_KEY)
+            .setParameter("key", YoutubeConstants.INNERTUBE_ANDROID_API_KEY)
             .build();
 
         if (request instanceof HttpRequestBase) {

@@ -50,11 +50,11 @@ public class YoutubeSearchMusicProvider implements YoutubeSearchMusicResultLoade
 
     try (HttpInterface httpInterface = httpInterfaceManager.getInterface()) {
       HttpPost post = new HttpPost(MUSIC_SEARCH_URL);
-      String json = YoutubeClientConfig.MUSIC.copy()
-              .withRootField("query", query)
-              .withRootField("params", "Eg-KAQwIARAAGAAgACgAMABqChADEAQQCRAFEAo=")
-              .toJsonString();
-      StringEntity payload = new StringEntity(json, "UTF-8");
+      YoutubeClientConfig clientConfig = YoutubeClientConfig.MUSIC.copy()
+          .withRootField("query", query)
+          .withRootField("params", YoutubeConstants.SEARCH_MUSIC_PARAMS)
+          .setAttributes(httpInterface);
+      StringEntity payload = new StringEntity(clientConfig.toJsonString(), "UTF-8");
       post.setHeader("Referer", "music.youtube.com");
       post.setEntity(payload);
 
