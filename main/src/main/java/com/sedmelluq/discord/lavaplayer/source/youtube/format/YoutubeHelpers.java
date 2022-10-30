@@ -9,7 +9,6 @@ public class YoutubeHelpers {
 
     /**
      * Generates a random, 16-character string using characters from {@link #CONTENT_PLAYBACK_NONCE_ALPHABET}.
-     * @return
      */
     public static String generateContentPlaybackNonce() {
         final StringBuilder stringBuilder = new StringBuilder(16);
