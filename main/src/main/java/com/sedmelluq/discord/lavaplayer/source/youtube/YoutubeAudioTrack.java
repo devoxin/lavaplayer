@@ -43,7 +43,11 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
 
   @Override
   public void process(LocalAudioTrackExecutor localExecutor) throws Exception {
-    FormatWithUrl format = loadBestFormatWithUrl(YoutubeClientConfig.WEB.copy());
+    YoutubeClientConfig primaryConfig = YoutubeClientConfig.WEB.copy()
+        .withClientField("clientScreen", "EMBED")
+        .withThirdPartyEmbedUrl("https://google.com");
+
+    FormatWithUrl format = loadBestFormatWithUrl(primaryConfig);
     log.debug("Starting track from URL: {}", format.signedUrl);
 
     if (trackInfo.isStream || format.details.getContentLength() == CONTENT_LENGTH_UNKNOWN) {
