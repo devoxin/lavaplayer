@@ -43,13 +43,25 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
 
   @Override
   public void process(LocalAudioTrackExecutor localExecutor) throws Exception {
-    FormatWithUrl format = loadBestFormatWithUrl();
+    FormatWithUrl format = loadBestFormatWithUrl(YoutubeClientConfig.WEB.copy());
     log.debug("Starting track from URL: {}", format.signedUrl);
 
     if (trackInfo.isStream || format.details.getContentLength() == CONTENT_LENGTH_UNKNOWN) {
       processStream(localExecutor, format); // perhaps this should be using the interface too?
     } else {
-      processStatic(localExecutor, format);
+      try {
+        processStatic(localExecutor, format);
+      } catch (RuntimeException e) {
+        if (!e.getMessage().equals("Not success status code: 403")) {
+          throw e;
+        }
+
+        YoutubeClientConfig fallbackConfig = YoutubeClientConfig.ANDROID.copy()
+            .withClientField("clientScreen", "EMBED")
+            .withThirdPartyEmbedUrl("https://google.com");
+
+        processStatic(localExecutor, loadBestFormatWithUrl(fallbackConfig));
+      }
     }
   }
 
@@ -108,10 +120,10 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
     }
   }
 
-  private FormatWithUrl loadBestFormatWithUrl() throws Exception {
+  private FormatWithUrl loadBestFormatWithUrl(YoutubeClientConfig config) throws Exception {
     try (HttpInterface httpInterface = sourceManager.getHttpInterface()) {
       YoutubeTrackDetails details = sourceManager.getTrackDetailsLoader()
-              .loadDetails(httpInterface, getIdentifier(), true, sourceManager);
+              .loadDetails(httpInterface, getIdentifier(), true, sourceManager, config);
 
       // If the error reason is "Video unavailable" details will return null
       if (details == null) {
