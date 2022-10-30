@@ -43,11 +43,7 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
 
   @Override
   public void process(LocalAudioTrackExecutor localExecutor) throws Exception {
-    YoutubeClientConfig primaryConfig = YoutubeClientConfig.WEB.copy()
-        .withClientField("clientScreen", "EMBED")
-        .withThirdPartyEmbedUrl("https://google.com");
-
-    FormatWithUrl format = loadBestFormatWithUrl(primaryConfig);
+    FormatWithUrl format = loadBestFormatWithUrl(null); // first attempt with ANDROID client
     log.debug("Starting track from URL: {}", format.signedUrl);
 
     if (trackInfo.isStream || format.details.getContentLength() == CONTENT_LENGTH_UNKNOWN) {
@@ -60,7 +56,8 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
           throw e;
         }
 
-        YoutubeClientConfig fallbackConfig = YoutubeClientConfig.ANDROID.copy()
+        log.warn("Encountered 403 when requesting formats with default (ANDROID?) client, falling back to WEB.");
+        YoutubeClientConfig fallbackConfig = YoutubeClientConfig.WEB.copy()
             .withClientField("clientScreen", "EMBED")
             .withThirdPartyEmbedUrl("https://google.com");
 
