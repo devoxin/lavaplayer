@@ -1,4 +1,4 @@
-package com.sedmelluq.discord.lavaplayer.source.youtube.format;
+package com.sedmelluq.discord.lavaplayer.source.youtube;
 
 import java.util.Random;
 
