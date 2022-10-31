@@ -222,7 +222,8 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
         // Android client gives encoded Base64 response to trailer which is also protobuf, so we can't decode it
         config = YoutubeClientConfig.WEB.copy();
       } else if (infoStatus == InfoStatus.NON_EMBEDDABLE) { // When age restriction bypass fails, if we have valid auth then this request will most likely succeed
-        config = YoutubeClientConfig.ANDROID.copy();
+        config = YoutubeClientConfig.ANDROID.copy()
+            .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
       } else if (infoStatus == InfoStatus.REQUIRES_LOGIN) {
         // Age restriction bypass
         config = YoutubeClientConfig.TV_EMBEDDED.copy();
@@ -232,7 +233,7 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
             .withClientField("clientScreen", "EMBED")
             .withThirdPartyEmbedUrl("https://google.com")
             .withRootField("cpn", YoutubeHelpers.generateContentPlaybackNonce())
-            .withRootField("params", "8AEB");
+            .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
       }
     }
 
