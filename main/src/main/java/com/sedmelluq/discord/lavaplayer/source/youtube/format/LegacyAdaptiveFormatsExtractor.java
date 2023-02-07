@@ -39,7 +39,7 @@ public class LegacyAdaptiveFormatsExtractor implements OfflineYoutubeTrackFormat
           "",
           format.get("s"),
           format.getOrDefault("sp", DEFAULT_SIGNATURE_KEY),
-          format.entrySet().stream().map(item -> item.getKey() + "=" + item.getValue()).collect(Collectors.joining(","))
+          true
       ));
     }
 

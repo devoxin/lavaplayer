@@ -4,8 +4,6 @@ import org.apache.http.entity.ContentType;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Describes an available media format for a track
@@ -20,7 +18,7 @@ public class YoutubeTrackFormat {
   private final String nParameter;
   private final String signature;
   private final String signatureKey;
-  private final String extra;
+  private final boolean defaultAudioTrack;
 
   /**
    * @param type Mime type of the format
@@ -41,7 +39,7 @@ public class YoutubeTrackFormat {
       String nParameter,
       String signature,
       String signatureKey,
-      String extra
+      boolean isDefaultAudioTrack
   ) {
     this.info = YoutubeFormatInfo.get(type);
     this.type = type;
@@ -52,7 +50,7 @@ public class YoutubeTrackFormat {
     this.nParameter = nParameter;
     this.signature = signature;
     this.signatureKey = signatureKey;
-    this.extra = extra;
+    this.defaultAudioTrack = isDefaultAudioTrack;
   }
 
   /**
@@ -122,7 +120,11 @@ public class YoutubeTrackFormat {
     return signatureKey;
   }
 
-  public String getExtra() {
-    return this.extra;
+  /**
+   * @return Whether this format contains an audio track that is used by default.
+   */
+  public boolean isDefaultAudioTrack() {
+    return defaultAudioTrack;
   }
 }
+

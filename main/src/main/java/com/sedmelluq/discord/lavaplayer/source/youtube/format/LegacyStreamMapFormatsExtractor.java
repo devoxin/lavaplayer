@@ -58,7 +58,7 @@ public class LegacyStreamMapFormatsExtractor implements OfflineYoutubeTrackForma
             "",
             format.get("s"),
             format.getOrDefault("sp", DEFAULT_SIGNATURE_KEY),
-            format.entrySet().stream().map(item -> item.getKey() + "=" + item.getValue()).collect(Collectors.joining(","))
+            true
         ));
       } catch (RuntimeException e) {
         anyFailures = true;
