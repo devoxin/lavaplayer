@@ -17,11 +17,10 @@ dependencies {
   api("org.apache.httpcomponents:httpclient:4.5.10")
   implementation("commons-io:commons-io:2.6")
 
-  api("com.fasterxml.jackson.core:jackson-core:2.10.0")
-  api("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+  api("com.fasterxml.jackson.core:jackson-core:2.14.2")
+  api("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
-  implementation("org.jsoup:jsoup:1.12.1")
-  implementation("net.iharder:base64:2.3.9")
+  implementation("org.jsoup:jsoup:1.15.4")
 
   implementation("com.grack:nanojson:1.7")
 
