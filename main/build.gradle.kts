@@ -14,7 +14,7 @@ dependencies {
   implementation("org.mozilla:rhino-engine:1.7.14")
   api("org.slf4j:slf4j-api:1.7.25")
 
-  api("org.apache.httpcomponents:httpclient:4.5.10")
+  api("org.apache.httpcomponents:httpclient:4.5.14")
   implementation("commons-io:commons-io:2.11.0")
 
   api("com.fasterxml.jackson.core:jackson-core:2.14.2")
