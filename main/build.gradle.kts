@@ -15,7 +15,7 @@ dependencies {
   api("org.slf4j:slf4j-api:1.7.25")
 
   api("org.apache.httpcomponents:httpclient:4.5.10")
-  implementation("commons-io:commons-io:2.6")
+  implementation("commons-io:commons-io:2.11.0")
 
   api("com.fasterxml.jackson.core:jackson-core:2.14.2")
   api("com.fasterxml.jackson.core:jackson-databind:2.14.2")
