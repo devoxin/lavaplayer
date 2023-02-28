@@ -45,6 +45,11 @@ public class YoutubeClientConfig {
         .withClientField("clientVersion", "2.0");
         //.withClientField("platform", "TV");
 
+    // These may be needed in future for TV client. Not sure about clientScreen one yet.
+        //.withUserField("lockedSafetyMode", "false")
+        //.withClientField("clientScreen", "EMBED")
+        //.withThirdPartyEmbedUrl("https://google.com")
+
     public static YoutubeClientConfig WEB = new YoutubeClientConfig()
         .withApiKey(YoutubeConstants.INNERTUBE_WEB_API_KEY)
         .withClientName("WEB")
