@@ -17,6 +17,9 @@ public enum DefaultOperatingSystemTypes implements OperatingSystemType {
   DARWIN("darwin", "lib", ".dylib"),
   SOLARIS("solaris", "lib", ".so");
 
+  private static final Logger log = LoggerFactory.getLogger(DefaultOperatingSystemTypes.class);
+  private static volatile Boolean cachedMusl;
+
   private final String identifier;
   private final String libraryFilePrefix;
   private final String libraryFileSuffix;
