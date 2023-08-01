@@ -8,7 +8,7 @@ public class YoutubeConstants {
     public static final String INNERTUBE_TV_API_KEY = "AIzaSyD-L7DIyuMgBk-B4DYmjJZ5UG-D6Y-vkMc";
     public static final String INNERTUBE_MUSIC_API_KEY = "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30";
 
-    public static final String PLAYER_PARAMS = "8AEB";
+    public static final String PLAYER_PARAMS = "CgIQBg";
     public static final String SEARCH_PARAMS = "EgIQAQ==";
     public static final String SEARCH_MUSIC_PARAMS = "Eg-KAQwIARAAGAAgACgAMABqChADEAQQCRAFEAo=";
 
