@@ -50,6 +50,7 @@ public class YoutubeAudioSourceManager implements AudioSourceManager, HttpConfig
   private final YoutubeSearchResultLoader searchResultLoader;
   private final YoutubeSearchMusicResultLoader searchMusicResultLoader;
   private final YoutubePlaylistLoader playlistLoader;
+  private final YoutubeLyricsLoader lyricsLoader;
   private final YoutubeLinkRouter linkRouter;
   private final LoadingRoutes loadingRoutes;
 
@@ -113,6 +114,7 @@ public class YoutubeAudioSourceManager implements AudioSourceManager, HttpConfig
     this.linkRouter = linkRouter;
     this.mixLoader = mixLoader;
     this.loadingRoutes = new LoadingRoutes();
+    this.lyricsLoader = new YoutubeLyricsLoader();
 
     combinedHttpConfiguration = new MultiHttpConfigurable(Arrays.asList(
         httpInterfaceManager,
@@ -238,6 +240,19 @@ public class YoutubeAudioSourceManager implements AudioSourceManager, HttpConfig
       return new YoutubeAudioTrack(details.getTrackInfo(), this);
     } catch (Exception e) {
       throw ExceptionTools.wrapUnfriendlyExceptions("Loading information for a YouTube track failed.", FAULT, e);
+    }
+  }
+
+  /**
+   * Attempts to get the lyrics for the given video ID. May not work for non-YTM videos.
+   * @param videoId ID of the YouTube video/song.
+   * @return The lyrics for the video. Could be null.
+   */
+  public String getLyricsForVideo(String videoId) {
+    try (HttpInterface httpInterface = getHttpInterface()) {
+      return lyricsLoader.getLyricsForVideo(httpInterface, videoId);
+    } catch (Exception e) {
+      throw ExceptionTools.wrapUnfriendlyExceptions("Loading lyrics for a YouTube video failed.", FAULT, e);
     }
   }
 
