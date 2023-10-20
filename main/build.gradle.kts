@@ -20,7 +20,7 @@ dependencies {
   api("com.fasterxml.jackson.core:jackson-core:2.14.2")
   api("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
-  implementation("org.jsoup:jsoup:1.15.4")
+  implementation("org.jsoup:jsoup:1.16.2")
 
   implementation("com.grack:nanojson:1.7")
 
