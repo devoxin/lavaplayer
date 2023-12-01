@@ -139,11 +139,11 @@ public abstract class M3uStreamSegmentUrlProvider {
 
   protected boolean isAbsoluteUrl(String url) {
     try {
-      // We only want to return false here if we have a baseUrl (for converting relative URLs)
-      // and the provided url is incomplete (relative).
-      return this.baseUrl != null || new URI(url).isAbsolute();
+      // A URL is considered absolute if we don't have a baseUrl (so cannot convert a relative URL)
+      // or if URI#isAbsolute returns true.
+      return this.baseUrl == null || new URI(url).isAbsolute();
     } catch (URISyntaxException e) {
-        return false;
+      return false;
     }
   }
 
@@ -158,6 +158,10 @@ public abstract class M3uStreamSegmentUrlProvider {
 
     for (String lineText : lines) {
       ExtendedM3uParser.Line line = ExtendedM3uParser.parseLine(lineText);
+
+      if (line.isDirective() && "EXTINF".equals(line.directiveName)) {  // ADDED AS TEST
+        streamInfoLine = line;                                          // if this breaks anything, remove it
+      }                                                                 // taken from soundcloud m3u parser.
 
       if (line.isData() && streamInfoLine != null) {
         String quality = getQualityFromM3uDirective(streamInfoLine);

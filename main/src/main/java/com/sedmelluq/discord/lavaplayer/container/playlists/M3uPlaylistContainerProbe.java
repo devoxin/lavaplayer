@@ -90,7 +90,7 @@ public class M3uPlaylistContainerProbe implements MediaContainerProbe {
     for (String line : lines) {
       if (line.startsWith("#EXTINF")) {
         trackTitle = extractTitleFromInfo(line);
-      } else if (!line.startsWith("#") && line.length() > 0) {
+      } else if (!line.startsWith("#") && !line.isEmpty()) {
         if (line.startsWith("http://") || line.startsWith("https://") || line.startsWith("icy://")) {
           return refer(this, new AudioReference(line.trim(), trackTitle));
         }

@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parser for extended M3U lines, handles the format where directives have named argumentsm, for example:
+ * Parser for extended M3U lines, handles the format where directives have named arguments, for example:
  * #SOMETHING:FOO="thing",BAR=4
  */
 public class ExtendedM3uParser {
