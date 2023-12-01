@@ -18,6 +18,7 @@ public class HlsStreamSegmentUrlProvider extends M3uStreamSegmentUrlProvider {
   private volatile String segmentPlaylistUrl;
 
   public HlsStreamSegmentUrlProvider(String streamListUrl, String segmentPlaylistUrl) {
+    super(streamListUrl);
     this.streamListUrl = streamListUrl;
     this.segmentPlaylistUrl = segmentPlaylistUrl;
   }

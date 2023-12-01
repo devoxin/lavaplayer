@@ -34,6 +34,7 @@ public class TwitchStreamSegmentUrlProvider extends M3uStreamSegmentUrlProvider 
    * @param manager Twitch source manager.
    */
   public TwitchStreamSegmentUrlProvider(String channelName, TwitchStreamAudioSourceManager manager) {
+    super(null);
     this.channelName = channelName;
     this.manager = manager;
     this.tokenExpirationTime = -1;
