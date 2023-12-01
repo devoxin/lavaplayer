@@ -159,10 +159,6 @@ public abstract class M3uStreamSegmentUrlProvider {
     for (String lineText : lines) {
       ExtendedM3uParser.Line line = ExtendedM3uParser.parseLine(lineText);
 
-      if (line.isDirective() && "EXTINF".equals(line.directiveName)) {  // ADDED AS TEST
-        streamInfoLine = line;                                          // if this breaks anything, remove it
-      }                                                                 // taken from soundcloud m3u parser.
-
       if (line.isData() && streamInfoLine != null) {
         String quality = getQualityFromM3uDirective(streamInfoLine);
         if (quality != null) {
@@ -170,7 +166,7 @@ public abstract class M3uStreamSegmentUrlProvider {
         }
 
         streamInfoLine = null;
-      } else if (line.isDirective() && "EXT-X-STREAM-INF".equals(line.directiveName)) {
+      } else if (line.isDirective() && ("EXT-X-STREAM-INF".equals(line.directiveName))) { //|| "EXTINF".equals(line.directiveName))) {
         streamInfoLine = line;
       }
     }
