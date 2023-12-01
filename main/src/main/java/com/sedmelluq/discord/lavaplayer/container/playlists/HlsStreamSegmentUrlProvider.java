@@ -43,7 +43,7 @@ public class HlsStreamSegmentUrlProvider extends M3uStreamSegmentUrlProvider {
 
     ChannelStreamInfo stream = streams.get(0);
 
-    log.debug("Chose stream with url {}", stream.quality, stream.url);
+    log.debug("Chose stream {} with url {}", stream.quality, stream.url);
     segmentPlaylistUrl = stream.url;
     return segmentPlaylistUrl;
   }

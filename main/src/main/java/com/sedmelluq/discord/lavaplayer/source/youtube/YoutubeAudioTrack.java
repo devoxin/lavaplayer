@@ -56,7 +56,7 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
           throw e;
         }
 
-        log.warn("Encountered 403 when requesting formats with default (ANDROID?) client, falling back to WEB.");
+        log.warn("Encountered 403 when requesting formats with default client, falling back to WEB.");
         YoutubeClientConfig fallbackConfig = YoutubeClientConfig.WEB.copy()
             .withClientField("clientScreen", "EMBED")
             .withThirdPartyEmbedUrl("https://google.com");
