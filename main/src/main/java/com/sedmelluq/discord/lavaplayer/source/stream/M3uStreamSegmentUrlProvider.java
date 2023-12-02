@@ -166,7 +166,7 @@ public abstract class M3uStreamSegmentUrlProvider {
         }
 
         streamInfoLine = null;
-      } else if (line.isDirective() && ("EXT-X-STREAM-INF".equals(line.directiveName))) { //|| "EXTINF".equals(line.directiveName))) {
+      } else if (line.isDirective() && ("EXT-X-STREAM-INF".equals(line.directiveName) || "EXTINF".equals(line.directiveName))) {
         streamInfoLine = line;
       }
     }
