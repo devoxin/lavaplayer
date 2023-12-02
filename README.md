@@ -3,7 +3,7 @@
 
 # LavaPlayer - Audio player library for Discord
 
-### This is a forked version of [walkyst/lavaplayer-fork] which is a fork of [sedmelluq/lavaplayer].
+### This is a fork of [walkyst/lavaplayer-fork] which is a fork of [sedmelluq/lavaplayer].
 The [original repository][sedmelluq/lavaplayer] is no longer maintained at the time of writing, and updates have slowed for [Walkyst's fork][walkyst/lavaplayer-fork], as well as the main focus being on the `custom` branch per his use case. As I personally have no use for the features the `custom` branch offers, and the desire to have quick updates, I have therefore decided to maintain my own fork, where all my work will be on the `original` branch. As it is with open source projects, anyone is free to use this fork, and I'll endeavour to maintain it frequently. Should either of the aforementioned forks receive updates, I will aim to include those updates within this fork if applicable.
 
 Notable mention: [Lavalink-Devs/lavaplayer](https://github.com/lavalink-devs/lavaplayer).
