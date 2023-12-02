@@ -1,9 +1,16 @@
+[sedmelluq/lavaplayer]: https://github.com/sedmelluq/lavaplayer
+[walkyst/lavaplayer-fork]: https://github.com/walkyst/lavaplayer-fork
+
 # LavaPlayer - Audio player library for Discord
 
-### **This is forked version of LavaPlayer, original repo here https://github.com/sedmelluq/lavaplayer**
-Currently LavaPlayer repo is not actively maintained so decided create this fork, if main repo will be maintained again this fork will follow up and include all updates from it
+### This is a forked version of [walkyst/lavaplayer-fork] which is a fork of [sedmelluq/lavaplayer].
+The [original repository][sedmelluq/lavaplayer] is no longer maintained at the time of writing, and updates have slowed for [Walkyst's fork][walkyst/lavaplayer-fork], as well as the main focus being on the `custom` branch per his use case. As I personally have no use for the features the `custom` branch offers, and the desire to have quick updates, I have therefore decided to maintain my own fork, where all my work will be on the `original` branch. As it is with open source projects, anyone is free to use this fork, and I'll endeavour to maintain it frequently. Should either of the aforementioned forks receive updates, I will aim to include those updates within this fork if applicable.
 
-Custom branch used for my own updates and usage, it include playback and searching on Yandex Music, provide thumbnails from all available audio sources in `AudioTrackInfo` exclude http one (this is mainly breaking change, because it affect how all tracks decoded/encoded)
+Notable mention: [Lavalink-Devs/lavaplayer](https://github.com/lavalink-devs/lavaplayer).
+
+As a maintainer of that fork as well, I will aim to port most updates found here over to that fork as well, given that it's used in [Lavalink](https://github.com/lavalink-devs/lavalink).
+
+-------
 
 LavaPlayer is an audio player library written in Java which can load audio tracks from various sources and convert them into a stream of Opus frames. It is designed for use with Discord bots, but it can be used anywhere where Opus format output is required.
 
@@ -11,10 +18,10 @@ LavaPlayer is an audio player library written in Java which can load audio track
 
 #### Maven package
 
-Replace `x.y.z` with the latest version number: [![](https://jitpack.io/v/walkyst/lavaplayer-fork.svg)](https://jitpack.io/#walkyst/lavaplayer-fork)
+Replace `x.y.z` with the latest version number: [![](https://jitpack.io/v/devoxin/lavaplayer.svg)](https://jitpack.io/#devoxin/lavaplayer)
 
 * Repository: https://jitpack.io
-* Artifact: **com.github.walkyst:lavaplayer-fork:x.y.z**
+* Artifact: **com.github.devoxin:lavaplayer:x.y.z**
 
 Using in Gradle:
 ```gradle
@@ -25,7 +32,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.github.walkyst:lavaplayer-fork:x.y.z'
+  implementation 'com.github.devoxin:lavaplayer:x.y.z'
 }
 ```
 
@@ -40,8 +47,8 @@ Using in Maven:
 
 <dependencies>
   <dependency>
-    <groupId>com.github.walkyst</groupId>
-    <artifactId>lavaplayer-fork</artifactId>
+    <groupId>com.github.devoxin</groupId>
+    <artifactId>lavaplayer</artifactId>
     <version>x.y.z</version>
   </dependency>
 </dependencies>
@@ -64,7 +71,7 @@ The file formats that LavaPlayer can currently handle are (relevant for file/url
 
 * MP3
 * FLAC
-* WAV
+* WAV (S16LE, S24LE)
 * Matroska/WebM (AAC, Opus or Vorbis codecs)
 * MP4/M4A (AAC codec)
 * OGG streams (Opus, Vorbis and FLAC codecs)
