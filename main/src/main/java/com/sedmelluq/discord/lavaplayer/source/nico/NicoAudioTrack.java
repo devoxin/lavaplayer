@@ -1,5 +1,6 @@
 package com.sedmelluq.discord.lavaplayer.source.nico;
 
+import com.grack.nanojson.JsonWriter;
 import com.sedmelluq.discord.lavaplayer.container.mpeg.MpegAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
@@ -30,8 +31,6 @@ import java.util.stream.Collectors;
  */
 public class NicoAudioTrack extends DelegatedAudioTrack {
   private static final Logger log = LoggerFactory.getLogger(NicoAudioTrack.class);
-  private static final String JSON_STRING = "{\"session\":{\"content_type\":\"movie\",\"timing_constraint\":\"unlimited\",\"recipe_id\":\"%s\",\"content_id\":\"%s\",\"keep_method\":{\"heartbeat\":{\"lifetime\":%d}},\"content_src_id_sets\":[{\"content_src_ids\":[{\"src_id_to_mux\":{\"video_src_ids\":[\"%s\"],\"audio_src_ids\":[\"%s\"]}}]}],\"protocol\":{\"name\":\"http\",\"parameters\":{\"http_parameters\":{\"parameters\":{\"http_output_download_parameters\":{\"use_well_known_port\":\"%s\",\"use_ssl\":\"%s\"}}}}},\"session_operation_auth\":{\"session_operation_auth_by_signature\":{\"token\":\"%s\",\"signature\":\"%s\"}},\"content_auth\":{\"auth_type\":\"%s\",\"content_key_timeout\":%d,\"service_id\":\"nicovideo\",\"service_user_id\":\"%s\"},\"client_info\":{\"player_id\":\"%s\"}}}";
-
   private static String actionTrackId = "S1G2fKdzOl_1702504390263";
 
   private final NicoAudioSourceManager sourceManager;
@@ -153,82 +152,61 @@ public class NicoAudioTrack extends DelegatedAudioTrack {
     boolean useWellKnownPort = url.get("isWellKnownPort").asBoolean(false);
     boolean useSsl = url.get("isSsl").asBoolean(false);
 
-    // Honestly this looks awful, and it's probably super unfriendly to work with should the JSON structure change in future
-    // buuuuuuuuuuuuuuut this method only takes ~1ms to process. Constructing a JSON object properly (the commented code below this)
-    // takes around 5ms. In the grand scheme of things, saving 4ms at the expense of maintainability is not worth it but this is funny
-    // ...and I hope this doesn't need to be changed frequently in future. If it does, I'll just use the method below.
-    return String.format(
-        JSON_STRING,
-        input.get("recipeId").text(),
-        input.get("contentId").text(),
-        input.get("heartbeatLifetime").asLong(120000),
-        String.join("\",\"", videos),
-        String.join("\",\"", audios),
-        useWellKnownPort ? "yes" : "no",
-        useSsl ? "yes" : "no",
-        input.get("token").text().replace("\"", "\\\""),
-        input.get("signature").text(),
-        input.get("authTypes").get("http").text(),
-        input.get("contentKeyTimeout").asLong(120000),
-        input.get("serviceUserId").text(),
-        input.get("playerId").text()
-    );
-
-//    return JsonWriter.string()
-//        .object()
-//          .object("session")
-//            .value("content_type", "movie")
-//            .value("timing_constraint", "unlimited")
-//            .value("recipe_id", input.get("recipeId").text())
-//            .value("content_id", input.get("contentId").text())
-//            .object("keep_method")
-//              .object("heartbeat")
-//                .value("lifetime", input.get("heartbeatLifetime").asLong(120000))
-//              .end()
-//            .end()
-//            .array("content_src_id_sets")
-//              .object()
-//                .array("content_src_ids")
-//                  .object()
-//                    .object("src_id_to_mux")
-//                      .array("video_src_ids", videos)
-//                      .array("audio_src_ids", audios)
-//                    .end()
-//                  .end()
-//                .end()
-//              .end()
-//            .end()
-//            .object("protocol")
-//              .value("name", "http")
-//              .object("parameters")
-//                .object("http_parameters")
-//                  .object("parameters")
-//                    .object("http_output_download_parameters")
-//                      .value("use_well_known_port", useWellKnownPort ? "yes" : "no")
-//                      .value("use_ssl", useSsl ? "yes" : "no")
-//                    .end()
-//                  .end()
-//                .end()
-//              .end()
-//            .end()
-//            .object("session_operation_auth")
-//              .object("session_operation_auth_by_signature")
-//                .value("token", input.get("token").text())
-//                .value("signature", input.get("signature").text())
-//              .end()
-//            .end()
-//            .object("content_auth")
-//              .value("auth_type", input.get("authTypes").get("http").text())
-//              .value("content_key_timeout", input.get("contentKeyTimeout").asLong(120000))
-//              .value("service_id", "nicovideo")
-//              .value("service_user_id", input.get("serviceUserId").text())
-//            .end()
-//            .object("client_info")
-//              .value("player_id", input.get("playerId").text())
-//            .end()
-//          .end()
-//        .end()
-//        .done();
+    return JsonWriter.string()
+        .object()
+          .object("session")
+            .value("content_type", "movie")
+            .value("timing_constraint", "unlimited")
+            .value("recipe_id", input.get("recipeId").text())
+            .value("content_id", input.get("contentId").text())
+            .object("keep_method")
+              .object("heartbeat")
+                .value("lifetime", input.get("heartbeatLifetime").asLong(120000))
+              .end()
+            .end()
+            .array("content_src_id_sets")
+              .object()
+                .array("content_src_ids")
+                  .object()
+                    .object("src_id_to_mux")
+                      .array("video_src_ids", videos)
+                      .array("audio_src_ids", audios)
+                    .end()
+                  .end()
+                .end()
+              .end()
+            .end()
+            .object("protocol")
+              .value("name", "http")
+              .object("parameters")
+                .object("http_parameters")
+                  .object("parameters")
+                    .object("http_output_download_parameters")
+                      .value("use_well_known_port", useWellKnownPort ? "yes" : "no")
+                      .value("use_ssl", useSsl ? "yes" : "no")
+                    .end()
+                  .end()
+                .end()
+              .end()
+            .end()
+            .object("session_operation_auth")
+              .object("session_operation_auth_by_signature")
+                .value("token", input.get("token").text())
+                .value("signature", input.get("signature").text())
+              .end()
+            .end()
+            .object("content_auth")
+              .value("auth_type", input.get("authTypes").get("http").text())
+              .value("content_key_timeout", input.get("contentKeyTimeout").asLong(120000))
+              .value("service_id", "nicovideo")
+              .value("service_user_id", input.get("serviceUserId").text())
+            .end()
+            .object("client_info")
+              .value("player_id", input.get("playerId").text())
+            .end()
+          .end()
+        .end()
+        .done();
   }
 
   @Override
