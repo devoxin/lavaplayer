@@ -46,20 +46,24 @@ public class NicoAudioSourceManager implements AudioSourceManager, HttpConfigura
 
   private static final Pattern trackUrlPattern = Pattern.compile(TRACK_URL_REGEX);
 
-  private final String email;
-  private final String password;
   private final HttpInterfaceManager httpInterfaceManager;
   private final AtomicBoolean loggedIn;
 
+  public NicoAudioSourceManager() {
+    this(null, null);
+  }
+
   /**
-   * @param email Site account email
+   * @param email    Site account email
    * @param password Site account password
    */
   public NicoAudioSourceManager(String email, String password) {
-    this.email = email;
-    this.password = password;
     httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager();
     loggedIn = new AtomicBoolean();
+
+    if (!DataFormatTools.isNullOrEmpty(email) && !DataFormatTools.isNullOrEmpty(password)) {
+      login(email, password);
+    }
   }
 
   @Override
@@ -79,8 +83,6 @@ public class NicoAudioSourceManager implements AudioSourceManager, HttpConfigura
   }
 
   private AudioTrack loadTrack(String videoId) {
-    checkLoggedIn();
-
     try (HttpInterface httpInterface = getHttpInterface()) {
       try (CloseableHttpResponse response = httpInterface.execute(new HttpGet("http://ext.nicovideo.jp/api/getthumbinfo/" + videoId))) {
         int statusCode = response.getStatusLine().getStatusCode();
@@ -98,9 +100,9 @@ public class NicoAudioSourceManager implements AudioSourceManager, HttpConfigura
 
   private AudioTrack extractTrackFromXml(String videoId, Document document) {
     for (Element element : document.select(":root > thumb")) {
-      String uploader = element.select("user_nickname").first().text();
-      String title = element.select("title").first().text();
-      long duration = DataFormatTools.durationTextToMillis(element.select("length").first().text());
+      String uploader = element.selectFirst("user_nickname").text();
+      String title = element.selectFirst("title").text();
+      long duration = DataFormatTools.durationTextToMillis(element.selectFirst("length").text());
 
       return new NicoAudioTrack(new AudioTrackInfo(title, uploader, duration, videoId, false, getWatchUrl(videoId)), this);
     }
@@ -145,7 +147,7 @@ public class NicoAudioSourceManager implements AudioSourceManager, HttpConfigura
     httpInterfaceManager.configureBuilder(configurator);
   }
 
-  void checkLoggedIn() {
+  void login(String email, String password) {
     synchronized (loggedIn) {
       if (loggedIn.get()) {
         return;
