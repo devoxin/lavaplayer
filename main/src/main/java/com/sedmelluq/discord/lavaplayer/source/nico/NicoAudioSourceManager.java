@@ -83,16 +83,12 @@ public class NicoAudioSourceManager implements AudioSourceManager, HttpConfigura
   }
 
   private AudioTrack loadTrack(String videoId) {
-    try (HttpInterface httpInterface = getHttpInterface()) {
-      try (CloseableHttpResponse response = httpInterface.execute(new HttpGet("http://ext.nicovideo.jp/api/getthumbinfo/" + videoId))) {
-        int statusCode = response.getStatusLine().getStatusCode();
-        if (!HttpClientTools.isSuccessWithContent(statusCode)) {
-          throw new IOException("Unexpected response code from video info: " + statusCode);
-        }
+    try (HttpInterface httpInterface = getHttpInterface();
+         CloseableHttpResponse response = httpInterface.execute(new HttpGet("http://ext.nicovideo.jp/api/getthumbinfo/" + videoId))) {
+        HttpClientTools.assertSuccessWithContent(response, "video info");
 
         Document document = Jsoup.parse(response.getEntity().getContent(), StandardCharsets.UTF_8.name(), "", Parser.xmlParser());
         return extractTrackFromXml(videoId, document);
-      }
     } catch (IOException e) {
       throw new FriendlyException("Error occurred when extracting video info.", SUSPICIOUS, e);
     }
