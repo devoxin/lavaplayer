@@ -102,13 +102,15 @@ public class WavFileLoader {
     }
 
     private void validateFormat() {
-      if (audioFormat != 1) {
-        throw new IllegalStateException("Invalid audio format " + audioFormat + ", must be 1 (PCM)");
+      // 1 = Linear Quantization
+      // 65534 = Wave Format Extensible
+      if (audioFormat != 1 && audioFormat != 65534) {
+        throw new IllegalStateException("Invalid audio format " + audioFormat + ", must be 1 (PCM) or 65534");
       } else if (channelCount < 1 || channelCount > 16) {
         throw new IllegalStateException("Invalid channel count: " + channelCount);
       } else if (sampleRate < 100 || sampleRate > 384000) {
         throw new IllegalStateException("Invalid sample rate: " + sampleRate);
-      } else if (bitsPerSample != 16 && bitsPerSample != 24) {
+      } else if (bitsPerSample != 16 && bitsPerSample != 24 && bitsPerSample != 32) {
         throw new IllegalStateException("Unsupported bits per sample: " + bitsPerSample);
       }
     }

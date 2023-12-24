@@ -22,11 +22,13 @@ public class WavTrackProvider {
   private final SeekableInputStream inputStream;
   private final DataInput dataInput;
   private final WavFileInfo info;
+  private final int bytesPerSample;
   private final AudioPipeline downstream;
+
   private final short[] buffer;
+  private final short[] transformBuffer;
   private final byte[] rawBuffer;
   private final ByteBuffer byteBuffer;
-  private final ShortBuffer nioBuffer;
 
   /**
    * @param context Configuration and output information for processing
@@ -37,12 +39,13 @@ public class WavTrackProvider {
     this.inputStream = inputStream;
     this.dataInput = new DataInputStream(inputStream);
     this.info = info;
+    this.bytesPerSample = info.bitsPerSample >> 3;
     this.downstream = AudioPipelineFactory.create(context, new PcmFormat(info.channelCount, info.sampleRate));
     this.buffer = info.getPadding() > 0 ? new short[info.channelCount * BLOCKS_IN_BUFFER] : null;
+    this.transformBuffer = info.bitsPerSample > 16 ? new short[info.channelCount * BLOCKS_IN_BUFFER] : null;
 
     this.byteBuffer = ByteBuffer.allocate(info.blockAlign * BLOCKS_IN_BUFFER).order(LITTLE_ENDIAN);
     this.rawBuffer = byteBuffer.array();
-    this.nioBuffer = byteBuffer.asShortBuffer();
   }
 
   /**
@@ -88,7 +91,7 @@ public class WavTrackProvider {
 
   private void processChunkWithPadding(int blockCount) throws IOException, InterruptedException {
     if (info.bitsPerSample != 16) {
-      throw new IllegalStateException("Cannot process " + info.bitsPerSample + "-bit PCM with padding!");
+      throw new IllegalStateException("Cannot process " + info.bitsPerSample + " bit PCM with padding!");
     }
 
     readChunkToBuffer(blockCount);
@@ -98,10 +101,10 @@ public class WavTrackProvider {
     int indexInBlock = 0;
 
     for (int i = 0; i < sampleCount; i++) {
-      buffer[i] = nioBuffer.get();
+      buffer[i] = byteBuffer.getShort();
 
       if (++indexInBlock == info.channelCount) {
-        nioBuffer.position(nioBuffer.position() + padding);
+        byteBuffer.position(byteBuffer.position() + padding);
         indexInBlock = 0;
       }
     }
@@ -113,15 +116,14 @@ public class WavTrackProvider {
     int sampleCount = readChunkToBuffer(blockCount);
 
     if (info.bitsPerSample == 16) {
-      downstream.process(nioBuffer);
-    } else if (info.bitsPerSample == 24) {
-      short[] samples = new short[sampleCount];
-
+      downstream.process(byteBuffer.asShortBuffer());
+    } else {
       for (int i = 0; i < sampleCount; i++) {
-        samples[i] = (short) (byteBuffer.get((i * 3) + 2) << 8 | byteBuffer.get((i * 3) + 1) & 0xFF);
+        // Reads the last 2 bytes of each sample.
+        transformBuffer[i] = (short) (byteBuffer.get((i * bytesPerSample) + bytesPerSample - 1) << 8 | byteBuffer.get((i * bytesPerSample) + bytesPerSample - 2) & 0xFF);
       }
 
-      downstream.process(samples, 0, sampleCount);
+      downstream.process(transformBuffer, 0, sampleCount);
     }
   }
 
@@ -131,9 +133,9 @@ public class WavTrackProvider {
     dataInput.readFully(rawBuffer, 0, bytesToRead);
 
     byteBuffer.position(0);
-    nioBuffer.position(0);
-    nioBuffer.limit(bytesToRead / bytesPerSample);
+    byteBuffer.limit(bytesToRead);
 
+    // Return the number of samples.
     return bytesToRead / bytesPerSample;
   }
 
