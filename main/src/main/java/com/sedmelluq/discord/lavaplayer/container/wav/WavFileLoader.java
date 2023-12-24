@@ -6,6 +6,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import static com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection.checkNextBytes;
 
@@ -64,7 +65,7 @@ public class WavFileLoader {
   }
 
   private void readFormatChunk(InfoBuilder builder, DataInput dataInput) throws IOException {
-    builder.audioFormat = Short.reverseBytes(dataInput.readShort()) & 0xFFFF;
+    builder.setAudioFormat(Short.reverseBytes(dataInput.readShort()) & 0xFFFF);
     builder.channelCount = Short.reverseBytes(dataInput.readShort()) & 0xFFFF;
     builder.sampleRate = Integer.reverseBytes(dataInput.readInt());
 
@@ -87,12 +88,18 @@ public class WavFileLoader {
 
   private static class InfoBuilder {
     private int audioFormat;
+    private WaveFormatType formatType;
     private int channelCount;
     private int sampleRate;
     private int bitsPerSample;
     private int blockAlign;
     private long sampleAreaSize;
     private long startOffset;
+
+    private void setAudioFormat(int audioFormat) {
+      this.audioFormat = audioFormat;
+      this.formatType = WaveFormatType.getByCode(audioFormat);
+    }
 
     private WavFileInfo build() {
       validateFormat();
@@ -102,10 +109,8 @@ public class WavFileLoader {
     }
 
     private void validateFormat() {
-      // 1 = Linear Quantization
-      // 65534 = Wave Format Extensible
-      if (audioFormat != 1 && audioFormat != 65534) {
-        throw new IllegalStateException("Invalid audio format " + audioFormat + ", must be 1 (PCM) or 65534");
+      if (formatType == WaveFormatType.WAVE_FORMAT_UNKNOWN) {
+        throw new IllegalStateException("Invalid audio format " + audioFormat + ", must be 1 (PCM) or 65534 (WAVE_FORMAT_EXTENSIBLE)");
       } else if (channelCount < 1 || channelCount > 16) {
         throw new IllegalStateException("Invalid channel count: " + channelCount);
       } else if (sampleRate < 100 || sampleRate > 384000) {
@@ -124,6 +129,24 @@ public class WavFileLoader {
         throw new IllegalStateException("Block align is not a multiple of bits per sample: " + blockAlign);
       } else if (sampleAreaSize < 0) {
         throw new IllegalStateException("Negative sample area size: " + sampleAreaSize);
+      }
+    }
+
+    enum WaveFormatType {
+      // https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Docs/Pages%20from%20mmreg.h.pdf
+      WAVE_FORMAT_UNKNOWN(0x0000),
+      WAVE_FORMAT_PCM(0x0001),
+      WAVE_FORMAT_EXTENSIBLE(0xFFFE);
+
+      final int code;
+
+      WaveFormatType(int code) {
+        this.code = code;
+      }
+
+      static WaveFormatType getByCode(int code) {
+        return Arrays.stream(values()).filter(type -> type.code == code).findFirst()
+            .orElse(WAVE_FORMAT_UNKNOWN);
       }
     }
   }
