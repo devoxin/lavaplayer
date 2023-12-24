@@ -1,5 +1,79 @@
 # Change Log
 
+## [1.5.0] -- 2023-12-24
+### Added
+- Support for PCM audio with 32 bits per sample (`S32LE`).
+
+### Fixed
+- Improved robustness of `wav` audio tracks with more than 16 bits per sample.
+
+### Changed
+- Optimised reading of PCM audio to reduce allocations.
+
+## [1.4.7] -- 2023-12-21
+### Fixed
+- `NicoNicoAudioSourceManager`.
+- Fixed m3u playlists not loading if Lavaplayer is directly given an inner playlist.
+
+## [1.4.6] -- 2023-12-01
+### Fixed
+- Fixed m3u playlists containing relative URLs not playing. 
+- YouTube playlist tracks sometimes having a missing author fields.
+  - Lavaplayer will provide a default as YouTube doesn't send the author in this situation.
+
+## [1.4.5] -- 2023-11-05
+### Fixed
+- `IDENTITY_REGEX` in `YoutubeAccessTokenTracker`.
+
+### Changed
+- Bumped a couple of dependency versions.
+
+## [1.4.4] -- 2023-10-04
+### Added
+- Support for retrieving lyrics from YouTube music.
+
+## [1.4.3] -- 2023-08-16
+### Added
+- Support for MPEG 2.5.
+- Support for SoundCloud short URLs.
+
+### Fixed
+- Ogg streaming.
+- YouTube access token updating.
+- Status code 403 for YouTube tracks.
+
+## [1.4.2] -- 2023-03-18
+### Fixed
+- `LocalFormatIntegrationTest` failing.
+
+## [1.4.1] -- 2023-03-15
+### Added
+- PCM S24LE support.
+- Support for rewinding YouTube streams.
+- Support for rewinding Ogg files.
+- `getSourceManagers()` to `AudioPlayerManager`.
+- Support for YouTube format audio tracks.
+- Ability to set custom socket factory.
+
+### Fixed
+- Twitch source.
+- Possible infinite read loop in mpeg parsing.
+- Rewinding to beginning of Ogg files.
+
+### Changed
+- Bumped dependency versions to try and resolve some CVE messages.
+
+## [1.3.99.1] -- 2022-10-31
+### Fixed
+- Send additional parameters with the `ANDROID` client in requests to YouTube.
+
+## [1.3.99] -- 2022-10-28
+### Fixed
+- Send Visitor ID header with YouTube requests.
+
+### Removed
+- YouTube client config retrying.
+
 ## [1.3.78] -- 2021-06-28
 ### Fixed
 - Fixed loading YouTube tracks with age verification.
