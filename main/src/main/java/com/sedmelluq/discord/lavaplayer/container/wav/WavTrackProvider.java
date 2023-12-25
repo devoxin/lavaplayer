@@ -9,7 +9,6 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
@@ -128,7 +127,6 @@ public class WavTrackProvider {
   }
 
   private int readChunkToBuffer(int blockCount) throws IOException {
-    int bytesPerSample = info.bitsPerSample >> 3;
     int bytesToRead = blockCount * info.blockAlign;
     dataInput.readFully(rawBuffer, 0, bytesToRead);
 
