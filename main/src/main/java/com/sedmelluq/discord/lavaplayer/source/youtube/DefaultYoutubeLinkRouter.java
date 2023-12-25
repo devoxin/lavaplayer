@@ -27,6 +27,7 @@ public class DefaultYoutubeLinkRouter implements YoutubeLinkRouter {
       new Extractor(Pattern.compile("^" + PLAYLIST_ID_REGEX + "$"), this::routeDirectPlaylist),
       new Extractor(Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/.*"), this::routeFromMainDomain),
       new Extractor(Pattern.compile("^" + PROTOCOL_REGEX + SHORT_DOMAIN_REGEX + "/.*"), this::routeFromShortDomain),
+      new Extractor(Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/live/.*"), this::routeFromLive),
       new Extractor(Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/embed/.*"), this::routeFromEmbed),
       new Extractor(Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/shorts/.*"), this::routeFromShorts)
   };
@@ -115,6 +116,11 @@ public class DefaultYoutubeLinkRouter implements YoutubeLinkRouter {
   protected <T> T routeFromShorts(Routes<T> routes, String url) {
     UrlInfo urlInfo = getUrlInfo(url, true);
     return routeFromUrlWithVideoId(routes, urlInfo.path.substring(8), urlInfo);
+  }
+
+  protected <T> T routeFromLive(Routes<T> routes, String url) {
+    UrlInfo urlInfo = getUrlInfo(url, true);
+    return routeFromUrlWithVideoId(routes, urlInfo.path.substring(6), urlInfo);
   }
 
   private static UrlInfo getUrlInfo(String url, boolean retryValidPart) {
