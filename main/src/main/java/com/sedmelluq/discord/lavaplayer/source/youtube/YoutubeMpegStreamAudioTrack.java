@@ -77,6 +77,10 @@ public class YoutubeMpegStreamAudioTrack extends MpegAudioTrack {
 
   @Override
   public long getPosition() {
+    if (state.absoluteSequence == null) {
+      return 0;
+    }
+
     return TimeUnit.SECONDS.toMillis(state.absoluteSequence * TimeUnit.MILLISECONDS.toSeconds(state.globalSequenceDuration));
   }
 

@@ -269,6 +269,10 @@ public class YoutubeAudioSourceManager implements AudioSourceManager, HttpConfig
 
     @Override
     public AudioItem playlist(String playlistId, String selectedVideoId) {
+      if (playlistId.equals("LL") || playlistId.equals("WL") || playlistId.equals("LM") || playlistId.equals("RDMM")) {
+        throw new FriendlyException("This playlist requires a logged in user.", COMMON, null);
+      }
+
       log.debug("Starting to load playlist with ID {}", playlistId);
 
       try (HttpInterface httpInterface = getHttpInterface()) {
