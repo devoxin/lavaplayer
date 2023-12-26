@@ -22,12 +22,16 @@ public class OpusChunkDecoder implements AudioChunkDecoder {
 
   @Override
   public void decode(byte[] encoded, ShortBuffer buffer) {
+    decodeWithCount(encoded, buffer);
+  }
+
+  public int decodeWithCount(byte[] encoded, ShortBuffer buffer) {
     encodedBuffer.clear();
     encodedBuffer.put(encoded);
     encodedBuffer.flip();
 
     buffer.clear();
-    decoder.decode(encodedBuffer, buffer);
+    return decoder.decode(encodedBuffer, buffer);
   }
 
   @Override
