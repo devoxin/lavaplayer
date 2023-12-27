@@ -1,5 +1,22 @@
 # Change Log
 
+## [1.5.1] -- Pending
+### Added
+- `AudioFrame#getFlags()`
+- `AudioChunkDecoder#decode(ByteBuffer, ShortBuffer)`
+- `OpusChunkDecoder#decodeWithCount`
+
+### Fixed
+- Fixed an issue where `MutableAudioFrame`s would not have a format applied in some cases.
+- Fixed an issue in `PcmVolumeProcessor` where some values were clamped with an incorrect minimum value.
+- Fixed loading of YouTube urls formatted as `/live/videoId`.
+- Fixed a possible `NullPointerException` when trying to invoke `getPosition()` on a Youtube mpeg stream where a sequence has not yet been received.
+
+### Changed
+- Changed `WavTrackProvider` to not needlessly recalculate `bytesPerSample`
+- Changed `YoutubeAudioSourceManager` to throw an exception when trying to load a user's automatically generated playlists.
+  - These are playlists like `LL` (liked videos), `WL` (watch later), `LM` and `RDMM`. These cannot be accessed without some form of oauth integration.
+
 ## [1.5.0] -- 2023-12-24
 ### Added
 - Support for PCM audio with 32 bits per sample (`S32LE`).
