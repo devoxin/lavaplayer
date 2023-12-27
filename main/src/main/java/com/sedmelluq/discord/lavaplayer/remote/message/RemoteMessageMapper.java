@@ -1,14 +1,11 @@
 package com.sedmelluq.discord.lavaplayer.remote.message;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * Handles encoding and decoding of messages.

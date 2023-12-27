@@ -4,8 +4,6 @@ import com.sedmelluq.discord.lavaplayer.tools.http.HttpContextFilter;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class BaseYoutubeHttpContextFilter implements HttpContextFilter {
   @Override

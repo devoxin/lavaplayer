@@ -1,31 +1,19 @@
 package com.sedmelluq.discord.lavaplayer.tools.http;
 
 import com.sedmelluq.discord.lavaplayer.tools.exception.DetailMessageBuilder;
-import java.io.IOException;
-import java.net.ConnectException;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
 import org.apache.http.HttpHost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.config.Lookup;
 import org.apache.http.config.SocketConfig;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.DnsResolver;
-import org.apache.http.conn.HttpClientConnectionOperator;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.conn.ManagedHttpClientConnection;
-import org.apache.http.conn.SchemePortResolver;
-import org.apache.http.conn.UnsupportedSchemeException;
+import org.apache.http.conn.*;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.impl.conn.DefaultSchemePortResolver;
 import org.apache.http.impl.conn.SystemDefaultDnsResolver;
 import org.apache.http.protocol.HttpContext;
+
+import java.io.IOException;
+import java.net.*;
 
 public class ExtendedConnectionOperator implements HttpClientConnectionOperator {
   private static final String SOCKET_FACTORY_REGISTRY = "http.socket-factory-registry";

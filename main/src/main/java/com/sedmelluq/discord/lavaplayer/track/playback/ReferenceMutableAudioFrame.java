@@ -7,6 +7,7 @@ public class ReferenceMutableAudioFrame extends AbstractMutableAudioFrame {
   private byte[] frameBuffer;
   private int frameOffset;
   private int frameLength;
+  private String[] flags = AudioFrame.DEFAULT_FLAGS;
 
   /**
    * @return The underlying byte buffer.
@@ -55,5 +56,14 @@ public class ReferenceMutableAudioFrame extends AbstractMutableAudioFrame {
     this.frameBuffer = frameBuffer;
     this.frameOffset = frameOffset;
     this.frameLength = frameLength;
+  }
+
+  public void setFlags(String... flags) {
+    this.flags = flags;
+  }
+
+  @Override
+  public String[] getFlags() {
+    return flags;
   }
 }

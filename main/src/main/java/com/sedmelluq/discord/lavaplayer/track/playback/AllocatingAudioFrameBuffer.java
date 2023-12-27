@@ -1,14 +1,15 @@
 package com.sedmelluq.discord.lavaplayer.track.playback;
 
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A frame buffer. Stores the specified duration worth of frames in the internal buffer.
@@ -110,6 +111,8 @@ public class AllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
         targetFrame.setVolume(frame.getVolume());
         targetFrame.store(frame.getData(), 0, frame.getDataLength());
         targetFrame.setTerminator(false);
+        targetFrame.setFormat(frame.getFormat());
+        targetFrame.setFlags(frame.getFlags());
       }
 
       return true;
@@ -194,7 +197,7 @@ public class AllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
 
   private AudioFrame filterFrame(AudioFrame frame) {
     if (frame != null && frame.getVolume() == 0) {
-      return new ImmutableAudioFrame(frame.getTimecode(), format.silenceBytes(), 0, format);
+      return new ImmutableAudioFrame(frame.getTimecode(), format.silenceBytes(), 0, format, frame.getFlags());
     }
 
     return frame;

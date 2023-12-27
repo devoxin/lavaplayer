@@ -3,6 +3,7 @@ package com.sedmelluq.discord.lavaplayer.format.transcoder;
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.natives.opus.OpusEncoder;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
+
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 

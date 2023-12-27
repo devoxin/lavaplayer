@@ -2,10 +2,9 @@ package com.sedmelluq.discord.lavaplayer.natives.mp3;
 
 import com.sedmelluq.lava.common.natives.NativeResourceHolder;
 
-import java.util.Arrays;
-
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 
 /**
  * A wrapper around the native methods of OpusDecoderLibrary.

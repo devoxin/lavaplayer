@@ -6,6 +6,8 @@ import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
  * Represents an audio frame.
  */
 public interface AudioFrame {
+  String[] DEFAULT_FLAGS = new String[0];
+
   /**
    * @return Absolute timecode of the frame in milliseconds.
    */
@@ -45,4 +47,8 @@ public interface AudioFrame {
    *         <code>true</code> in any frames received by the user.
    */
   boolean isTerminator();
+
+  default String[] getFlags() {
+    return DEFAULT_FLAGS;
+  }
 }

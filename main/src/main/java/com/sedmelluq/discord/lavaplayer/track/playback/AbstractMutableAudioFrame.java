@@ -51,6 +51,6 @@ public abstract class AbstractMutableAudioFrame implements AudioFrame {
    * @return An immutable instance created from this mutable audio frame. In an ideal flow, this should never be called.
    */
   public ImmutableAudioFrame freeze() {
-    return new ImmutableAudioFrame(timecode, getData(), volume, format);
+    return new ImmutableAudioFrame(timecode, getData(), volume, format, getFlags());
   }
 }

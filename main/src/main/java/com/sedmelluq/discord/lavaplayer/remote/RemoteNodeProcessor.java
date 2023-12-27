@@ -2,15 +2,7 @@ package com.sedmelluq.discord.lavaplayer.remote;
 
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.remote.message.NodeStatisticsMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.RemoteMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.RemoteMessageMapper;
-import com.sedmelluq.discord.lavaplayer.remote.message.TrackExceptionMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.TrackFrameDataMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.TrackFrameRequestMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.TrackStartRequestMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.TrackStartResponseMessage;
-import com.sedmelluq.discord.lavaplayer.remote.message.TrackStoppedMessage;
+import com.sedmelluq.discord.lavaplayer.remote.message.*;
 import com.sedmelluq.discord.lavaplayer.tools.ExceptionTools;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.tools.RingBufferMath;
@@ -24,25 +16,6 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameBuffer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioTrackExecutor;
 import com.sedmelluq.discord.lavaplayer.track.playback.ImmutableAudioFrame;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -52,6 +25,12 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.SUSPICIOUS;
 
@@ -365,7 +344,7 @@ public class RemoteNodeProcessor implements RemoteNode, Runnable {
       AudioDataFormat format = executor.getConfiguration().getOutputFormat();
 
       for (AudioFrame frame : message.frames) {
-        buffer.consume(new ImmutableAudioFrame(frame.getTimecode(), frame.getData(), frame.getVolume(), format));
+        buffer.consume(new ImmutableAudioFrame(frame.getTimecode(), frame.getData(), frame.getVolume(), format, frame.getFlags()));
       }
 
       if (message.finished) {

@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameRebuilder;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioProcessingContext;
 import com.sedmelluq.discord.lavaplayer.track.playback.ImmutableAudioFrame;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
@@ -68,7 +69,7 @@ public class AudioFrameVolumeChanger implements AudioFrameRebuilder {
       Thread.currentThread().interrupt();
     }
 
-    return new ImmutableAudioFrame(frame.getTimecode(), bytes, targetVolume, format);
+    return new ImmutableAudioFrame(frame.getTimecode(), bytes, targetVolume, format, frame.getFlags());
   }
 
   private void setupLibraries() {

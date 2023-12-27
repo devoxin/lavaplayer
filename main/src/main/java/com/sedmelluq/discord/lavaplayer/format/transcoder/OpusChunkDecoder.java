@@ -2,6 +2,7 @@ package com.sedmelluq.discord.lavaplayer.format.transcoder;
 
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.natives.opus.OpusDecoder;
+
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
@@ -32,6 +33,11 @@ public class OpusChunkDecoder implements AudioChunkDecoder {
 
     buffer.clear();
     return decoder.decode(encodedBuffer, buffer);
+  }
+
+  @Override
+  public void decode(ByteBuffer encoded, ShortBuffer buffer) {
+    decoder.decode(encoded, buffer);
   }
 
   @Override

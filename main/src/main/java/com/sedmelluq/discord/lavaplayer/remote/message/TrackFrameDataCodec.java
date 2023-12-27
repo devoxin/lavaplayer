@@ -2,6 +2,7 @@ package com.sedmelluq.discord.lavaplayer.remote.message;
 
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import com.sedmelluq.discord.lavaplayer.track.playback.ImmutableAudioFrame;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class TrackFrameDataCodec implements RemoteMessageCodec<TrackFrameDataMes
       byte[] data = new byte[in.readInt()];
       in.readFully(data);
 
-      frames.add(new ImmutableAudioFrame(timecode, data, in.readInt(), null));
+      frames.add(new ImmutableAudioFrame(timecode, data, in.readInt(), null, AudioFrame.DEFAULT_FLAGS));
     }
 
     return new TrackFrameDataMessage(executorId, frames, in.readBoolean(), in.readLong());

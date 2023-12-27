@@ -1,12 +1,13 @@
 package com.sedmelluq.discord.lavaplayer.track.playback;
 
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Audio frame buffer implementation which never allocates any new objects after creation. All instances of mutable
@@ -181,6 +182,8 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
     targetFrame.setVolume(frame.getVolume());
     targetFrame.setTerminator(false);
     targetFrame.store(frame.getFrameBuffer(), frame.getFrameOffset(), frame.getDataLength());
+    targetFrame.setFormat(frame.getFormat());
+    targetFrame.setFlags(frame.getFlags());
 
     firstFrame = wrappedFrameIndex(firstFrame + 1);
     frameCount--;
@@ -191,6 +194,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
     terminated = true;
 
     frame.setTerminator(true);
+    frame.setFlags(); // TODO: Check whether this is necessary.
   }
 
   @Override
@@ -267,6 +271,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
     targetFrame.setTimecode(frame.getTimecode());
     targetFrame.setVolume(frame.getVolume());
     targetFrame.setDataReference(frameBuffer, frameOffset, frameLength);
+    targetFrame.setFlags(frame.getFlags());
 
     frame.getData(frameBuffer, frameOffset);
 
@@ -287,7 +292,7 @@ public class NonAllocatingAudioFrameBuffer extends AbstractAudioFrameBuffer {
       return TerminatorAudioFrame.INSTANCE;
     } else {
       return new ImmutableAudioFrame(bridgeFrame.getTimecode(), bridgeFrame.getData(), bridgeFrame.getVolume(),
-          bridgeFrame.getFormat());
+          bridgeFrame.getFormat(), bridgeFrame.getFlags());
     }
   }
 

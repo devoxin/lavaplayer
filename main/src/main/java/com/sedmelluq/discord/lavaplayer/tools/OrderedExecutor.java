@@ -1,14 +1,6 @@
 package com.sedmelluq.discord.lavaplayer.tools;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.*;
 
 /**
  * Wrapper for executor services which ensures that tasks with the same key are processed in order.

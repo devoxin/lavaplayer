@@ -2,6 +2,7 @@ package com.sedmelluq.discord.lavaplayer.filter.equalizer;
 
 import com.sedmelluq.discord.lavaplayer.filter.FloatPcmAudioFilter;
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
+
 import java.util.Arrays;
 
 /**

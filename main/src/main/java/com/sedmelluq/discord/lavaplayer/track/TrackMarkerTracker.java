@@ -2,11 +2,7 @@ package com.sedmelluq.discord.lavaplayer.track;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.BYPASSED;
-import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.LATE;
-import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.OVERWRITTEN;
-import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.REACHED;
-import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.REMOVED;
+import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.*;
 
 /**
  * Tracks the state of a track position marker.

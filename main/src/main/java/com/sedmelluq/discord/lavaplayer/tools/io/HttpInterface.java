@@ -2,14 +2,15 @@ package com.sedmelluq.discord.lavaplayer.tools.io;
 
 import com.sedmelluq.discord.lavaplayer.tools.ExceptionTools;
 import com.sedmelluq.discord.lavaplayer.tools.http.HttpContextFilter;
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
 
 /**
  * An HTTP interface for performing HTTP requests in one specific thread. This also means it is not thread safe and should

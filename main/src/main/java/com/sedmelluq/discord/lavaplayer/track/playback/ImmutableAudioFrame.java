@@ -28,17 +28,20 @@ public class ImmutableAudioFrame implements AudioFrame {
    */
   public final AudioDataFormat format;
 
+  public final String[] flags;
+
   /**
    * @param timecode Timecode of this frame in milliseconds.
    * @param data Buffer for this frame, in the format specified in the format field.
    * @param volume Volume level of the audio in this frame.
    * @param format Specifies the format of audio in the data buffer.
    */
-  public ImmutableAudioFrame(long timecode, byte[] data, int volume, AudioDataFormat format) {
+  public ImmutableAudioFrame(long timecode, byte[] data, int volume, AudioDataFormat format, String[] flags) {
     this.timecode = timecode;
     this.data = data;
     this.volume = volume;
     this.format = format;
+    this.flags = flags;
   }
 
   @Override
@@ -74,5 +77,10 @@ public class ImmutableAudioFrame implements AudioFrame {
   @Override
   public boolean isTerminator() {
     return false;
+  }
+
+  @Override
+  public String[] getFlags() {
+    return flags;
   }
 }

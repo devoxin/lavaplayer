@@ -3,6 +3,7 @@ package com.sedmelluq.discord.lavaplayer.container.flac.frame;
 import com.sedmelluq.discord.lavaplayer.container.flac.FlacStreamInfo;
 import com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta;
 import com.sedmelluq.discord.lavaplayer.tools.io.BitStreamReader;
+
 import java.io.IOException;
 import java.io.InputStream;
 

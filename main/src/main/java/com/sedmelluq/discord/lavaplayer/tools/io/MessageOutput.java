@@ -1,10 +1,6 @@
 package com.sedmelluq.discord.lavaplayer.tools.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 /**
  * An output for  a series of messages which each have sizes specified before the start of the message. Even when the

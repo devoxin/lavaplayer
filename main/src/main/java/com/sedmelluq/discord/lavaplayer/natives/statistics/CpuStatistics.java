@@ -1,10 +1,6 @@
 package com.sedmelluq.discord.lavaplayer.natives.statistics;
 
-import static com.sedmelluq.discord.lavaplayer.natives.statistics.CpuStatisticsLibrary.Timings.PROCESS_KERNEL;
-import static com.sedmelluq.discord.lavaplayer.natives.statistics.CpuStatisticsLibrary.Timings.PROCESS_USER;
-import static com.sedmelluq.discord.lavaplayer.natives.statistics.CpuStatisticsLibrary.Timings.SYSTEM_KERNEL;
-import static com.sedmelluq.discord.lavaplayer.natives.statistics.CpuStatisticsLibrary.Timings.SYSTEM_TOTAL;
-import static com.sedmelluq.discord.lavaplayer.natives.statistics.CpuStatisticsLibrary.Timings.SYSTEM_USER;
+import static com.sedmelluq.discord.lavaplayer.natives.statistics.CpuStatisticsLibrary.Timings.*;
 
 /**
  * Provides information about system CPU usage.

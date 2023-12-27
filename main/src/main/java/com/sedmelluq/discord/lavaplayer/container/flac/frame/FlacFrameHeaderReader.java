@@ -3,12 +3,10 @@ package com.sedmelluq.discord.lavaplayer.container.flac.frame;
 import com.sedmelluq.discord.lavaplayer.container.flac.FlacStreamInfo;
 import com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta;
 import com.sedmelluq.discord.lavaplayer.tools.io.BitStreamReader;
+
 import java.io.IOException;
 
-import static com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta.LEFT_SIDE;
-import static com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta.MID_SIDE;
-import static com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta.NONE;
-import static com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta.RIGHT_SIDE;
+import static com.sedmelluq.discord.lavaplayer.container.flac.frame.FlacFrameInfo.ChannelDelta.*;
 
 /**
  * Contains methods for reading a frame header.

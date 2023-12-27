@@ -7,13 +7,15 @@ import com.sedmelluq.discord.lavaplayer.filter.volume.AudioFrameVolumeChanger;
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.format.OpusAudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.natives.opus.OpusDecoder;
+import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameFlags;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioProcessingContext;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A router for opus packets to the output specified by an audio processing context. It automatically detects if the
@@ -179,6 +181,8 @@ public class OpusPacketRouter {
         AudioFrameVolumeChanger.apply(context);
       }
     } else {
+      offeredFrame.setFlags(AudioFrameFlags.OPUS_PASSTHROUGH);
+
       if (opusDecoder != null) {
         log.debug("Enabling passthrough mode on opus track.");
 
@@ -190,6 +194,8 @@ public class OpusPacketRouter {
   }
 
   private void initialiseDecoder() {
+    offeredFrame.setFlags();
+
     opusDecoder = new OpusDecoder(inputFrequency, inputChannels);
 
     try {
