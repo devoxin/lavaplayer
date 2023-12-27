@@ -16,6 +16,7 @@ import static com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection
  */
 public class WavFileLoader {
   static final int[] WAV_RIFF_HEADER = new int[] { 0x52, 0x49, 0x46, 0x46, -1, -1, -1, -1, 0x57, 0x41, 0x56, 0x45 };
+  static final byte[] FORMAT_SUBTYPE_PCM = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x00, (byte) 0x80, 0x00, 0x00, (byte) 0xaa, 0x00, 0x38, (byte) 0x9b, 0x71 };
 
   private final SeekableInputStream inputStream;
 
@@ -44,10 +45,11 @@ public class WavFileLoader {
       long chunkSize = Integer.toUnsignedLong(Integer.reverseBytes(dataInput.readInt()));
 
       if ("fmt ".equals(chunkName)) {
-        readFormatChunk(builder, dataInput);
+        int bytesRead = readFormatChunk(builder, dataInput);
+        long chunkBytesRemaining = chunkSize - bytesRead;
 
-        if (chunkSize > 16) {
-          inputStream.skipFully(chunkSize - 16);
+        if (chunkBytesRemaining > 0) {
+          inputStream.skipFully(chunkBytesRemaining);
         }
       } else if ("data".equals(chunkName)) {
         builder.sampleAreaSize = chunkSize;
@@ -65,7 +67,14 @@ public class WavFileLoader {
     return new String(buffer, StandardCharsets.US_ASCII);
   }
 
-  private void readFormatChunk(InfoBuilder builder, DataInput dataInput) throws IOException {
+  /**
+   * Reads the format chunk of a wav file.
+   * @param builder The builder to assign format information to.
+   * @param dataInput The input to read from.
+   * @return The number of bytes read.
+   * @throws IOException If reading from the stream failed.
+   */
+  private int readFormatChunk(InfoBuilder builder, DataInput dataInput) throws IOException {
     builder.setAudioFormat(Short.reverseBytes(dataInput.readShort()) & 0xFFFF);
     builder.channelCount = Short.reverseBytes(dataInput.readShort()) & 0xFFFF;
     builder.sampleRate = Integer.reverseBytes(dataInput.readInt());
@@ -75,6 +84,16 @@ public class WavFileLoader {
 
     builder.blockAlign = Short.reverseBytes(dataInput.readShort()) & 0xFFFF;
     builder.bitsPerSample = Short.reverseBytes(dataInput.readShort()) & 0xFFFF;
+
+    if (builder.formatType == WaveFormatType.WAVE_FORMAT_EXTENSIBLE) {
+      dataInput.skipBytes(8);
+      byte[] subFormat = new byte[16];
+      dataInput.readFully(subFormat);
+      builder.subFormat = subFormat;
+      return 40;
+    }
+
+    return 16;
   }
 
   /**
@@ -90,6 +109,7 @@ public class WavFileLoader {
   private static class InfoBuilder {
     private int audioFormat;
     private WaveFormatType formatType;
+    private byte[] subFormat;
     private int channelCount;
     private int sampleRate;
     private int bitsPerSample;
@@ -112,6 +132,8 @@ public class WavFileLoader {
     private void validateFormat() {
       if (formatType == WaveFormatType.WAVE_FORMAT_UNKNOWN) {
         throw new IllegalStateException("Invalid audio format " + audioFormat + ", must be 1 (PCM) or 65534 (WAVE_FORMAT_EXTENSIBLE)");
+      } else if (subFormat != null && !Arrays.equals(subFormat, FORMAT_SUBTYPE_PCM)) {
+        throw new IllegalStateException("Invalid subformat " + Arrays.toString(subFormat));
       } else if (channelCount < 1 || channelCount > 16) {
         throw new IllegalStateException("Invalid channel count: " + channelCount);
       } else if (sampleRate < 100 || sampleRate > 384000) {
@@ -130,24 +152,6 @@ public class WavFileLoader {
         throw new IllegalStateException("Block align is not a multiple of bits per sample: " + blockAlign);
       } else if (sampleAreaSize < 0) {
         throw new IllegalStateException("Negative sample area size: " + sampleAreaSize);
-      }
-    }
-
-    enum WaveFormatType {
-      // https://www.mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/Docs/Pages%20from%20mmreg.h.pdf
-      WAVE_FORMAT_UNKNOWN(0x0000),
-      WAVE_FORMAT_PCM(0x0001),
-      WAVE_FORMAT_EXTENSIBLE(0xFFFE);
-
-      final int code;
-
-      WaveFormatType(int code) {
-        this.code = code;
-      }
-
-      static WaveFormatType getByCode(int code) {
-        return Arrays.stream(values()).filter(type -> type.code == code).findFirst()
-            .orElse(WAVE_FORMAT_UNKNOWN);
       }
     }
   }

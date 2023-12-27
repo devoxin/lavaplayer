@@ -14,6 +14,7 @@
 
 ### Changed
 - Changed `WavTrackProvider` to not needlessly recalculate `bytesPerSample`
+- Changed `WavFileLoader` to validate subformats when the format is `WAVE_FORMAT_EXTENSIBLE`.
 - Changed `YoutubeAudioSourceManager` to throw an exception when trying to load a user's automatically generated playlists.
   - These are playlists like `LL` (liked videos), `WL` (watch later), `LM` and `RDMM`. These cannot be accessed without some form of oauth integration.
 
