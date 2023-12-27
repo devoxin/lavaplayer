@@ -71,7 +71,7 @@ The file formats that LavaPlayer can currently handle are (relevant for file/url
 
 * MP3
 * FLAC
-* WAV (S16LE, S24LE)
+* WAV (PCM_S16LE, PCM_S24LE, PCM_S32LE)
 * Matroska/WebM (AAC, Opus or Vorbis codecs)
 * MP4/M4A (AAC codec)
 * OGG streams (Opus, Vorbis and FLAC codecs)
