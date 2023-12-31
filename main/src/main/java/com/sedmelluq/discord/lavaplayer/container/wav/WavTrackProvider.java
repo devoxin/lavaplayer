@@ -113,15 +113,15 @@ public class WavTrackProvider {
   private void processChunk(int blockCount) throws IOException, InterruptedException {
     int sampleCount = readChunkToBuffer(blockCount);
 
-    if (info.bitsPerSample == 16) {
-      downstream.process(byteBuffer.asShortBuffer());
-    } else {
+    if (info.bitsPerSample != 16) {
       for (int i = 0; i < sampleCount; i++) {
         byteBuffer.putShort(i * 2, byteBuffer.getShort((i * bytesPerSample) + bytesPerSample - 2));
       }
 
-      downstream.process(byteBuffer.limit(sampleCount * 2).asShortBuffer());
+      byteBuffer.limit(sampleCount * 2);
     }
+
+    downstream.process(byteBuffer.asShortBuffer());
   }
 
   private int readChunkToBuffer(int blockCount) throws IOException {
