@@ -25,6 +25,7 @@ import static com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason.*;
 public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
   private static final Logger log = LoggerFactory.getLogger(AudioPlayer.class);
 
+  private volatile InternalAudioTrack scheduledTrack;
   private volatile InternalAudioTrack activeTrack;
   private volatile long lastRequestTime;
   private volatile long lastReceiveTime;
@@ -49,10 +50,44 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
   }
 
   /**
-   * @return Currently playing track
+   * @return Currently playing track, or null
    */
   public AudioTrack getPlayingTrack() {
     return activeTrack;
+  }
+
+  /**
+   * @return Currently scheduled track, or null
+   */
+  public AudioTrack getScheduledTrack() {
+    return scheduledTrack;
+  }
+
+  /**
+   * Schedules the next track to be played. This will not trigger the track to be immediately played,
+   * but rather schedules it to play after the current track has finished. If there is no playing track,
+   * this function will return false
+   * @param track The track to schedule. This will overwrite the currently scheduled track, if one exists.
+   *              Passing null will clear the current scheduled track.
+   * @return True if the track was scheduled
+   */
+  public boolean scheduleTrack(AudioTrack track) {
+    if (activeTrack == null) {
+      return false;
+    }
+
+    synchronized (trackSwitchLock) {
+      if (scheduledTrack != null) {
+        scheduledTrack.stop();
+      }
+
+      InternalAudioTrack newTrack = (InternalAudioTrack) track;
+      scheduledTrack = newTrack;
+
+      manager.executeTrack(this, newTrack, manager.getConfiguration(), options);
+    }
+
+    return true;
   }
 
   /**
@@ -63,6 +98,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
   }
 
   /**
+   * Starts a new track. This will clear any scheduled tracks.
    * @param track The track to start playing, passing null will stop the current track and return false
    * @param noInterrupt Whether to only start if nothing else is playing
    * @return True if the track was started
@@ -76,6 +112,11 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
 
       if (noInterrupt && previousTrack != null) {
         return false;
+      }
+
+      if (scheduledTrack != null) {
+        scheduledTrack.stop();
+        scheduledTrack = null;
       }
 
       activeTrack = newTrack;
@@ -105,20 +146,42 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
   /**
    * Stop currently playing track.
    */
-  public void stopTrack() {
-    stopWithReason(STOPPED);
+  public void stopCurrentTrack() {
+    stopWithReason(STOPPED, false);
   }
 
-  private void stopWithReason(AudioTrackEndReason reason) {
+  /**
+   * Stop currently playing track and any scheduled tracks.
+   */
+  public void stopTrack() {
+    stopWithReason(STOPPED, true);
+  }
+
+  private void stopWithReason(AudioTrackEndReason reason, boolean includeScheduled) {
     shadowTrack = null;
 
     synchronized (trackSwitchLock) {
+      if (includeScheduled && scheduledTrack != null) {
+        scheduledTrack.stop();
+        scheduledTrack = null;
+      }
+
       InternalAudioTrack previousTrack = activeTrack;
-      activeTrack = null;
+
+      if (scheduledTrack != null) {
+        activeTrack = scheduledTrack;
+        scheduledTrack = null;
+      } else {
+        activeTrack = null;
+      }
 
       if (previousTrack != null) {
         previousTrack.stop();
         dispatchEvent(new TrackEndEvent(this, previousTrack, reason));
+      }
+
+      if (activeTrack != null) {
+        dispatchEvent(new TrackStartEvent(this, activeTrack));
       }
     }
   }
@@ -241,7 +304,22 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
       if (activeTrack == track) {
         activeTrack = null;
 
-        dispatchEvent(new TrackEndEvent(this, track, track.getActiveExecutor().failedBeforeLoad() ? LOAD_FAILED : FINISHED));
+        boolean failedBeforeLoad = track.getActiveExecutor().failedBeforeLoad();
+
+        AudioTrackEndReason endReason = scheduledTrack != null
+            ? (failedBeforeLoad ? LOAD_FAILED_GAPLESS : FINISHED_GAPLESS)
+            : (failedBeforeLoad ? LOAD_FAILED : FINISHED);
+
+        if (scheduledTrack != null) {
+          activeTrack = scheduledTrack;
+          scheduledTrack = null;
+        }
+
+        dispatchEvent(new TrackEndEvent(this, track, endReason));
+
+        if (activeTrack != null) {
+          dispatchEvent(new TrackStartEvent(this, activeTrack));
+        }
       }
     }
   }
@@ -370,7 +448,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
     if (track != null && System.currentTimeMillis() - lastRequestTime >= threshold) {
       log.debug("Triggering cleanup on an audio player playing track {}", track);
 
-      stopWithReason(CLEANUP);
+      stopWithReason(CLEANUP, true);
     }
   }
 }

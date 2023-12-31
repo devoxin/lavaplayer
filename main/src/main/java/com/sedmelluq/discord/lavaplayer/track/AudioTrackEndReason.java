@@ -5,6 +5,16 @@ package com.sedmelluq.discord.lavaplayer.track;
  */
 public enum AudioTrackEndReason {
   /**
+   * This is similar to {@link #FINISHED}, but a new track was immediately started -- typically the one scheduled
+   * with {@link com.sedmelluq.discord.lavaplayer.player.AudioPlayer#scheduleTrack}
+   */
+  FINISHED_GAPLESS(false),
+  /**
+   * This is similar to {@link #LOAD_FAILED}, but a new track was immediately started -- typically the one scheduled
+   * with {@link com.sedmelluq.discord.lavaplayer.player.AudioPlayer#scheduleTrack}
+   */
+  LOAD_FAILED_GAPLESS(false),
+  /**
    * This means that the track itself emitted a terminator. This is usually caused by the track reaching the end,
    * however it will also be used when it ends due to an exception.
    */

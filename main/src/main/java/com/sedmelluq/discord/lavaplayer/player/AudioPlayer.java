@@ -10,9 +10,16 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameProvider;
  */
 public interface AudioPlayer extends AudioFrameProvider {
   /**
-   * @return Currently playing track
+   * @return Currently playing track, or null
    */
   AudioTrack getPlayingTrack();
+
+  /**
+   * @return Currently scheduled track, or null
+   */
+  default AudioTrack getScheduledTrack() {
+    throw new UnsupportedOperationException();
+  }
 
   /**
    * @param track The track to start playing
@@ -27,9 +34,28 @@ public interface AudioPlayer extends AudioFrameProvider {
   boolean startTrack(AudioTrack track, boolean noInterrupt);
 
   /**
-   * Stop currently playing track.
+   * Schedules the next track to be played. This will not trigger the track to be immediately played,
+   * but rather schedules it to play after the current track has finished. If there is no playing track,
+   * this function will return false
+   * @param track The track to schedule. This will overwrite the currently scheduled track, if one exists.
+   *              Passing null will clear the current scheduled track.
+   * @return True if the track was scheduled
+   */
+  default boolean scheduleTrack(AudioTrack track) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Stop currently playing track. This will also clear any scheduled tracks.
    */
   void stopTrack();
+
+  /**
+   * Stop currently playing track.
+   */
+  default void stopCurrentTrack() {
+    throw new UnsupportedOperationException();
+  }
 
   int getVolume();
 
