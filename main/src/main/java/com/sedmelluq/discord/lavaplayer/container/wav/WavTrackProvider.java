@@ -26,7 +26,6 @@ public class WavTrackProvider {
   private final AudioPipeline downstream;
 
   private final short[] buffer;
-  private final short[] transformBuffer;
   private final byte[] rawBuffer;
   private final ByteBuffer byteBuffer;
 
@@ -42,7 +41,6 @@ public class WavTrackProvider {
     this.bytesPerSample = info.bitsPerSample >> 3;
     this.downstream = AudioPipelineFactory.create(context, new PcmFormat(info.channelCount, info.sampleRate));
     this.buffer = info.getPadding() > 0 ? new short[info.channelCount * BLOCKS_IN_BUFFER] : null;
-    this.transformBuffer = info.bitsPerSample > 16 ? new short[info.channelCount * BLOCKS_IN_BUFFER] : null;
 
     this.byteBuffer = ByteBuffer.allocate(info.blockAlign * BLOCKS_IN_BUFFER).order(LITTLE_ENDIAN);
     this.rawBuffer = byteBuffer.array();
@@ -119,11 +117,10 @@ public class WavTrackProvider {
       downstream.process(byteBuffer.asShortBuffer());
     } else {
       for (int i = 0; i < sampleCount; i++) {
-        // Reads the last 2 bytes of each sample.
-        transformBuffer[i] = (short) (byteBuffer.get((i * bytesPerSample) + bytesPerSample - 1) << 8 | byteBuffer.get((i * bytesPerSample) + bytesPerSample - 2) & 0xFF);
+        byteBuffer.putShort(i * 2, byteBuffer.getShort((i * bytesPerSample) + bytesPerSample - 2));
       }
 
-      downstream.process(transformBuffer, 0, sampleCount);
+      downstream.process(byteBuffer.limit(sampleCount * 2).asShortBuffer());
     }
   }
 
