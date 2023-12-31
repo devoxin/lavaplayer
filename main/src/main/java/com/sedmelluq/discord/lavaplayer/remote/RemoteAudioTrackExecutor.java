@@ -197,6 +197,16 @@ public class RemoteAudioTrackExecutor implements AudioTrackExecutor {
   }
 
   @Override
+  public void addMarker(TrackMarker marker) {
+    markerTracker.add(marker, getPosition());
+  }
+
+  @Override
+  public void removeMarker(TrackMarker marker) {
+    markerTracker.remove(marker);
+  }
+
+  @Override
   public AudioFrame provide() {
     AudioFrame frame = frameBuffer.provide();
     processProvidedFrame(frame);
