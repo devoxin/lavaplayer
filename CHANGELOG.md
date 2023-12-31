@@ -2,10 +2,11 @@
 
 ## [1.6.0] -- Pending
 ### Added
-- `AudioFrame#getFlags()`
-- `AudioChunkDecoder#decode(ByteBuffer, ShortBuffer)`
-- `OpusChunkDecoder#decodeWithCount`
-- Support for multiple track markers.
+- Added audio frame flags, accessible via `AudioFrame#getFlags()`
+- Added a method for decoding an audio chunk with an existing ByteBuffer via `AudioChunkDecoder#decode(ByteBuffer, ShortBuffer)`
+- Added a method for decoding an opus audio chunk which returns the number of bytes decoded via `OpusChunkDecoder#decodeWithCount`
+- Added support for multiple track markers.
+- Added support for gapless playback.
 
 ### Fixed
 - Fixed an issue where `MutableAudioFrame`s would not have a format applied in some cases.
@@ -13,6 +14,7 @@
 - Fixed loading of YouTube urls formatted as `/live/videoId`.
 - Fixed a possible `NullPointerException` when trying to invoke `getPosition()` on a Youtube mpeg stream where a sequence has not yet been received.
 - Fixed `TwitchStreamAudioSourceManager` not finding channels if uppercase characters were present.
+- Fixed `NicoAudioSourceManager`'s `TRACK_URL_REGEX` not capturing some URL patterns.
 
 ### Changed
 - Changed `WavTrackProvider` to not needlessly recalculate `bytesPerSample`
@@ -23,7 +25,7 @@
 
 ## [1.5.0] -- 2023-12-24
 ### Added
-- Support for PCM audio with 32 bits per sample (`S32LE`).
+- Added support for PCM audio with 32 bits per sample (`S32LE`).
 
 ### Fixed
 - Improved robustness of `wav` audio tracks with more than 16 bits per sample.
@@ -51,12 +53,12 @@
 
 ## [1.4.4] -- 2023-10-04
 ### Added
-- Support for retrieving lyrics from YouTube music.
+- Added support for retrieving lyrics from YouTube music.
 
 ## [1.4.3] -- 2023-08-16
 ### Added
-- Support for MPEG 2.5.
-- Support for SoundCloud short URLs.
+- Added support for MPEG 2.5.
+- Added support for SoundCloud short URLs.
 
 ### Fixed
 - Ogg streaming.
@@ -69,11 +71,11 @@
 
 ## [1.4.1] -- 2023-03-15
 ### Added
-- PCM S24LE support.
-- Support for rewinding YouTube streams.
-- Support for rewinding Ogg files.
-- `getSourceManagers()` to `AudioPlayerManager`.
-- Support for YouTube format audio tracks.
+- Added `PCM_S24LE` support.
+- Added support for rewinding YouTube streams.
+- Added support for rewinding Ogg files.
+- Added a method for retrieving registered source managers via `AudioPlayerManager#getSourceManagers()`.
+- Added support for YouTube format audio tracks.
 - Ability to set custom socket factory.
 
 ### Fixed
