@@ -5,6 +5,7 @@
 - `AudioFrame#getFlags()`
 - `AudioChunkDecoder#decode(ByteBuffer, ShortBuffer)`
 - `OpusChunkDecoder#decodeWithCount`
+- Support for multiple track markers.
 
 ### Fixed
 - Fixed an issue where `MutableAudioFrame`s would not have a format applied in some cases.
