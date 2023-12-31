@@ -25,6 +25,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -116,7 +117,7 @@ public class TwitchStreamAudioSourceManager implements AudioSourceManager, HttpC
       return null;
     }
 
-    return matcher.group(1);
+    return matcher.group(1).toLowerCase(Locale.ROOT);
   }
 
   /**
@@ -182,7 +183,7 @@ public class TwitchStreamAudioSourceManager implements AudioSourceManager, HttpC
 
   private void initRequestHeaders() {
     try (HttpInterface httpInterface = getHttpInterface()) {
-      HttpGet get = new HttpGet("https://www.twitch.tv");
+      HttpGet get = new HttpGet(TWITCH_URL);
       get.setHeader("Accept", "text/html");
       CloseableHttpResponse response = httpInterface.execute(get);
       HttpClientTools.assertSuccessWithContent(response, "twitch main page");
