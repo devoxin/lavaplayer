@@ -11,9 +11,11 @@
 - Fixed an issue in `PcmVolumeProcessor` where some values were clamped with an incorrect minimum value.
 - Fixed loading of YouTube urls formatted as `/live/videoId`.
 - Fixed a possible `NullPointerException` when trying to invoke `getPosition()` on a Youtube mpeg stream where a sequence has not yet been received.
+- Fixed `TwitchStreamAudioSourceManager` not finding channels if uppercase characters were present.
 
 ### Changed
 - Changed `WavTrackProvider` to not needlessly recalculate `bytesPerSample`
+- Optimised `WavTrackProvider` transformation of PCM samples with >16 bits.
 - Changed `WavFileLoader` to validate subformats when the format is `WAVE_FORMAT_EXTENSIBLE`.
 - Changed `YoutubeAudioSourceManager` to throw an exception when trying to load a user's automatically generated playlists.
   - These are playlists like `LL` (liked videos), `WL` (watch later), `LM` and `RDMM`. These cannot be accessed without some form of oauth integration.
