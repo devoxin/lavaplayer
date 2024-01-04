@@ -1,12 +1,13 @@
 # Change Log
 
-## [1.6.0] -- Pending
+## [1.6.0] -- 2024-01-04
 ### Added
 - Added audio frame flags, accessible via `AudioFrame#getFlags()`
 - Added a method for decoding an audio chunk with an existing ByteBuffer via `AudioChunkDecoder#decode(ByteBuffer, ShortBuffer)`
 - Added a method for decoding an opus audio chunk which returns the number of bytes decoded via `OpusChunkDecoder#decodeWithCount`
 - Added support for multiple track markers.
 - Added support for gapless playback.
+- Added support for Vimeo's HLS format.
 
 ### Fixed
 - Fixed an issue where `MutableAudioFrame`s would not have a format applied in some cases.
