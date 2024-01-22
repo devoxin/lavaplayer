@@ -1,6 +1,8 @@
 package com.sedmelluq.discord.lavaplayer.source.soundcloud;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultSoundCloudFormatHandler implements SoundCloudFormatHandler {
   private static final FormatType[] TYPES = FormatType.values();
@@ -15,7 +17,11 @@ public class DefaultSoundCloudFormatHandler implements SoundCloudFormatHandler {
       }
     }
 
-    throw new RuntimeException("Did not detect any supported formats");
+    String formatList = formats.stream()
+        .map(fmt -> fmt.getProtocol() + ": " + fmt.getMimeType())
+        .collect(Collectors.joining(", "));
+
+    throw new RuntimeException("Did not detect any supported formats, available formats: " + formatList);
   }
 
   @Override
