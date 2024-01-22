@@ -48,6 +48,7 @@ public class DefaultSoundCloudDataReader implements SoundCloudDataReader {
     }
 
     for (JsonBrowser transcoding : trackData.get("media").get("transcodings").values()) {
+      // transcoding.get("snipped").asBoolean(false) -> true if track is a SoundCloud Go+ track.
       JsonBrowser format = transcoding.get("format");
 
       String protocol = format.get("protocol").safeText();
