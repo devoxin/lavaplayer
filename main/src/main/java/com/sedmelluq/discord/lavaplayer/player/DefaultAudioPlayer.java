@@ -431,6 +431,15 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
 
   @Override
   public void onTrackException(AudioTrack track, FriendlyException exception) {
+    if (track == scheduledTrack) {
+      synchronized (trackSwitchLock) {
+        if (track == scheduledTrack) {
+          scheduledTrack.stop();
+          scheduledTrack = null;
+        }
+      }
+    }
+
     dispatchEvent(new TrackExceptionEvent(this, track, exception));
   }
 
