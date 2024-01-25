@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultSoundCloudDataReader implements SoundCloudDataReader {
   private static final Logger log = LoggerFactory.getLogger(DefaultSoundCloudDataReader.class);
@@ -28,13 +29,18 @@ public class DefaultSoundCloudDataReader implements SoundCloudDataReader {
 
   @Override
   public AudioTrackInfo readTrackInfo(JsonBrowser trackData, String identifier) {
-    return new AudioTrackInfo(
+    boolean hasSnippedStreams = trackData.get("media").get("transcodings").values().stream()
+        .anyMatch(transcoding -> transcoding.get("snipped").asBoolean(false));
+
+    return new SoundcloudAudioTrackInfo(
         trackData.get("title").safeText(),
         trackData.get("user").get("username").safeText(),
         trackData.get("full_duration").as(Integer.class),
         identifier,
         false,
-        trackData.get("permalink_url").text()
+        trackData.get("permalink_url").text(),
+        trackData.get("monetization_model").text(),
+        hasSnippedStreams
     );
   }
 

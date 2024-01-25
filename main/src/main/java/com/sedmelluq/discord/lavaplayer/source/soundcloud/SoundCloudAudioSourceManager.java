@@ -19,9 +19,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -147,13 +145,57 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
   }
 
   @Override
-  public void encodeTrack(AudioTrack track, DataOutput output) {
-    // No extra information to save
+  public void encodeTrack(AudioTrack track, DataOutput output) throws IOException {
+    if (track.getInfo() instanceof SoundcloudAudioTrackInfo) {
+      SoundcloudAudioTrackInfo trackInfo = (SoundcloudAudioTrackInfo) track.getInfo();
+
+      output.writeUTF(trackInfo.monetizationModel);
+      output.writeBoolean(trackInfo.snipped);
+    }
   }
 
   @Override
-  public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) {
-    return new SoundCloudAudioTrack(trackInfo, this);
+  public AudioTrack decodeTrack(AudioTrackInfo trackInfo, DataInput input) throws IOException {
+    DataInputStream stream = (DataInputStream) input;
+
+    if (stream.available() <= 8 || !stream.markSupported()) {
+      // This is a bit of a hack to determine if there's any source-manager specific data to be
+      // read here. As source managers don't write versioned information by default, we can't rely
+      // on an `int` field denoting v1, v2, v3 etc. As of this implementation, the only field read
+      // after calling `decodeTrackDetails` is a long denoting the track's position, and as a long
+      // is only 8 bytes we can, with some confidence, just check `input.available()`.
+      return new SoundCloudAudioTrack(trackInfo, this);
+    }
+
+    // The expected ByteArrayInputStream that input encompasses doesn't do anything with
+    // the readLimit parameter, however it is provided an arbitrary value in the event
+    // that we do not receive the input stream type we were expecting.
+    stream.mark(1024);
+
+    AudioTrackInfo info = trackInfo;
+
+    try {
+      String monetizationModel = input.readUTF();
+      boolean snipped = input.readBoolean();
+
+      info = new SoundcloudAudioTrackInfo(
+          trackInfo.title,
+          trackInfo.author,
+          trackInfo.length,
+          trackInfo.identifier,
+          trackInfo.isStream,
+          trackInfo.uri,
+          monetizationModel,
+          snipped
+      );
+    } catch (IOException e) {
+      stream.reset();
+      // We don't strictly need to log anything here as it's an IOException we expect
+      // specifically in the event of decoding *older* tracks that didn't have the new
+      // trackInfo fields.
+    }
+
+    return new SoundCloudAudioTrack(info, this);
   }
 
   @Override
