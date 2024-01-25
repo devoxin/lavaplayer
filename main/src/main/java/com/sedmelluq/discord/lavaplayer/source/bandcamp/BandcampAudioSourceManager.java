@@ -94,6 +94,10 @@ public class BandcampAudioSourceManager implements AudioSourceManager, HttpConfi
 
       List<AudioTrack> tracks = new ArrayList<>();
       for (JsonBrowser trackInfo : trackListInfo.get("trackinfo").values()) {
+        if (trackInfo.get("title_link").isNull()) {
+          continue;
+        }
+
         tracks.add(extractTrack(trackInfo, urlInfo.baseUrl, artist));
       }
 
