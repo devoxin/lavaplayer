@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.6.1] -- 2024-01-25
+### Fixed
+- Fixed Bandcamp tracks throwing an exception due to invalid URLs caused by a null `title_link` property.
+- Fixed scheduled tracks in `DefaultAudioPlayer` not being unset upon throwing an exception.
+
+### Changed
+- Changed Soundcloud tracks to log all returned formats when a compatible one could not be found.
+
 ## [1.6.0] -- 2024-01-04
 ### Added
 - Added audio frame flags, accessible via `AudioFrame#getFlags()`
