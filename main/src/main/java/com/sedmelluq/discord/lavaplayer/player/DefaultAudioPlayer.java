@@ -167,10 +167,12 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
       }
 
       InternalAudioTrack previousTrack = activeTrack;
+      boolean swapped = false;
 
       if (scheduledTrack != null) {
         activeTrack = scheduledTrack;
         scheduledTrack = null;
+        swapped = true;
       } else {
         activeTrack = null;
       }
@@ -180,7 +182,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         dispatchEvent(new TrackEndEvent(this, previousTrack, reason));
       }
 
-      if (activeTrack != null) {
+      if (swapped && activeTrack != null) {
         dispatchEvent(new TrackStartEvent(this, activeTrack));
       }
     }
@@ -305,6 +307,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         activeTrack = null;
 
         boolean failedBeforeLoad = track.getActiveExecutor().failedBeforeLoad();
+        boolean swapped = false;
 
         AudioTrackEndReason endReason = scheduledTrack != null
             ? (failedBeforeLoad ? LOAD_FAILED_GAPLESS : FINISHED_GAPLESS)
@@ -313,11 +316,12 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
         if (scheduledTrack != null) {
           activeTrack = scheduledTrack;
           scheduledTrack = null;
+          swapped = true;
         }
 
         dispatchEvent(new TrackEndEvent(this, track, endReason));
 
-        if (activeTrack != null) {
+        if (swapped && activeTrack != null) {
           dispatchEvent(new TrackStartEvent(this, activeTrack));
         }
       }
