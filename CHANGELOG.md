@@ -1,5 +1,13 @@
 # Change Log
 
+## [1.7.0] -- 2024-01-27
+### Fixed
+- Fixed a race condition that could cause `TrackStartEvent` to fire multiple times.
+
+### Added
+- Added `monetizationModel` and `snipped` fields to `SoundcloudAudioTrack`.
+  - This can be used for identifying SoundCloud Go+ tracks.
+
 ## [1.6.1] -- 2024-01-25
 ### Fixed
 - Fixed Bandcamp tracks throwing an exception due to invalid URLs caused by a null `title_link` property.
