@@ -175,6 +175,16 @@ public class SoundCloudAudioSourceManager implements AudioSourceManager, HttpCon
     AudioTrackInfo info = trackInfo;
 
     try {
+      short mmLength = input.readShort();
+      stream.reset();
+
+      // dirty patch to fix issues with users encoding their own data onto the end of track strings
+      // which causes the `available() <= 8` check to pass and then the source manager erroneously
+      // tries to read data that doesn't belong to it.
+      if (mmLength == 0 || mmLength > 15) {
+        return new SoundCloudAudioTrack(trackInfo, this);
+      }
+
       String monetizationModel = input.readUTF();
       boolean snipped = input.readBoolean();
 

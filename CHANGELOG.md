@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.7.1] -- Pending
+### Fixed
+- Fixed an issue with the `SoundCloudAudioSourceManager` where it could try to decode a track with extra, custom data encoded into the base64 string.
+
 ## [1.7.0] -- 2024-01-27
 ### Fixed
 - Fixed a race condition that could cause `TrackStartEvent` to fire multiple times.
