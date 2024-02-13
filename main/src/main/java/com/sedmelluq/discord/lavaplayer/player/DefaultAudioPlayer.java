@@ -25,16 +25,16 @@ import static com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason.*;
 public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
   private static final Logger log = LoggerFactory.getLogger(AudioPlayer.class);
 
-  private volatile InternalAudioTrack scheduledTrack;
-  private volatile InternalAudioTrack activeTrack;
+  protected volatile InternalAudioTrack scheduledTrack;
+  protected volatile InternalAudioTrack activeTrack;
   private volatile long lastRequestTime;
   private volatile long lastReceiveTime;
   private volatile boolean stuckEventSent;
-  private volatile InternalAudioTrack shadowTrack;
+  protected volatile InternalAudioTrack shadowTrack;
   private final AtomicBoolean paused;
-  private final DefaultAudioPlayerManager manager;
+  protected final DefaultAudioPlayerManager manager;
   private final CopyOnUpdateIdentityList<AudioEventListener> listeners;
-  private final Object trackSwitchLock;
+  protected final Object trackSwitchLock;
   private final AudioPlayerOptions options;
 
   /**
