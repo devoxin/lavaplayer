@@ -419,7 +419,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
     }
   }
 
-  private void dispatchEvent(AudioEvent event) {
+  protected void dispatchEvent(AudioEvent event) {
     log.debug("Firing an event with class {}", event.getClass().getSimpleName());
 
     synchronized (trackSwitchLock) {
