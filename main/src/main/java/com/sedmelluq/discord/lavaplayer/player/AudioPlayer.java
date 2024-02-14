@@ -46,6 +46,23 @@ public interface AudioPlayer extends AudioFrameProvider {
   }
 
   /**
+   * Identical to {@link #scheduleTrack(AudioTrack)} but the replaceExisting parameter will determine
+   * whether an existing scheduled track will be overwritten.
+   * If replaceExisting is false and a track is scheduled, this  will return false.
+   * If there is no playing track, this will return false.
+   * @param track The track to schedule.
+   * @param replaceExisting Whether to replace the current scheduled track, if one exists.
+   * @return True if the track was scheduled.
+   */
+  default boolean scheduleTrack(AudioTrack track, boolean replaceExisting) {
+    if (!replaceExisting && getScheduledTrack() != null) {
+      return false;
+    }
+
+    return scheduleTrack(track);
+  }
+
+  /**
    * Stop currently playing track. This will also clear any scheduled tracks.
    */
   void stopTrack();
