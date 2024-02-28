@@ -25,7 +25,14 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoader {
   private static final Logger log = LoggerFactory.getLogger(DefaultYoutubeTrackDetailsLoader.class);
 
+  private YoutubeAccessTokenTracker tokenTracker;
+
   private volatile CachedPlayerScript cachedPlayerScript = null;
+
+  @Override
+  public void setTokenTracker(YoutubeAccessTokenTracker tokenTracker) {
+    this.tokenTracker = tokenTracker;
+  }
 
   @Override
   public YoutubeTrackDetails loadDetails(HttpInterface httpInterface, String videoId, boolean requireFormats, YoutubeAudioSourceManager sourceManager, YoutubeClientConfig clientConfig) {
@@ -61,7 +68,14 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
         return null;
       }
 
-      if (!videoId.equals(initialData.playerResponse.get("videoDetails").get("videoId").text())) {
+      String responseVideoId = initialData.playerResponse.get("videoDetails").get("videoId").text();
+
+      if (!videoId.equals(responseVideoId)) {
+        if (clientConfig == null) {
+          log.warn("Received different YouTube video ({}, want: {}) to what was requested, retrying with WEB client...", responseVideoId, videoId);
+          return load(httpInterface, videoId, requireFormats, sourceManager, YoutubeClientConfig.WEB);
+        }
+
         throw new FriendlyException("Video returned by YouTube isn't what was requested", COMMON,
             new IllegalStateException(initialData.playerResponse.format()));
       }
@@ -217,30 +231,27 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
     YoutubeClientConfig config = clientOverride;
 
     if (config == null) {
-      if (infoStatus == InfoStatus.PREMIERE_TRAILER) {
-        // Android client gives encoded Base64 response to trailer which is also protobuf, so we can't decode it
+      if (infoStatus == InfoStatus.PREMIERE_TRAILER) { // Base64 protobuf response, requires WEB
         config = YoutubeClientConfig.WEB.copy();
-      } else if (infoStatus == InfoStatus.NON_EMBEDDABLE) { // When age restriction bypass fails, if we have valid auth then this request will most likely succeed
+      } else if (infoStatus == InfoStatus.NON_EMBEDDABLE) { // When age restriction bypass fails, this request should succeed if we have valid auth.
         config = YoutubeClientConfig.ANDROID.copy()
             .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
-      } else if (infoStatus == InfoStatus.REQUIRES_LOGIN) {
-        // Age restriction bypass
+      } else if (infoStatus == InfoStatus.REQUIRES_LOGIN) { // Age restriction, requires TV_EMBEDDED
         config = YoutubeClientConfig.TV_EMBEDDED.copy();
-      } else {
-        // Default payload from what we start trying to get required data
+      } else { // Default payload from what we start trying to get required data
         config = YoutubeClientConfig.ANDROID.copy()
             .withClientField("clientScreen", "EMBED")
             .withThirdPartyEmbedUrl("https://google.com")
-            .withRootField("cpn", YoutubeHelpers.generateContentPlaybackNonce())
             .withRootField("params", YoutubeConstants.PLAYER_PARAMS);
       }
     }
 
-    String payload = config.withRootField("racyCheckOk", true)
+    String payload = config.setAttributes(httpInterface)
+        .withRootField("racyCheckOk", true)
         .withRootField("contentCheckOk", true)
         .withRootField("videoId", videoId)
+        .withClientField("visitorData", tokenTracker.getVisitorId())
         .withPlaybackSignatureTimestamp(playerScriptTimestamp.scriptTimestamp)
-        .setAttributes(httpInterface)
         .toJsonString();
 
     log.debug("Loading track info with payload: {}", payload);
@@ -256,6 +267,14 @@ public class DefaultYoutubeTrackDetailsLoader implements YoutubeTrackDetailsLoad
       } catch (FriendlyException e) {
         throw e;
       } catch (Exception e) {
+        if ("Invalid status code for video page response: 400".equals(e.getMessage()) && clientOverride == null) {
+          YoutubeClientConfig retryConfig = YoutubeClientConfig.WEB.copy()
+              .withClientField("clientScreen", "EMBED")
+              .withThirdPartyEmbedUrl("https://google.com");
+
+          return loadTrackInfoFromInnertube(httpInterface, videoId, sourceManager, infoStatus, retryConfig);
+        }
+
         throw new FriendlyException("Received unexpected response from YouTube.", SUSPICIOUS,
             new RuntimeException("Failed to parse: " + responseText, e));
       }

@@ -12,6 +12,7 @@ import com.sedmelluq.discord.lavaplayer.track.playback.LocalAudioTrackExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -52,14 +53,18 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
       try {
         processStatic(localExecutor, format);
       } catch (RuntimeException e) {
-        if (!e.getMessage().equals("Not success status code: 403")) {
+        String message = e.getMessage();
+
+        if (!"Not success status code: 403".equals(message) && !"Invalid status code for video page response: 400".equals(message)) {
           throw e;
         }
 
-        log.warn("Encountered 403 when requesting formats with default client, falling back to WEB.");
+        String code = message.split(": ", 2)[1];
+
+        log.warn("Encountered {} when requesting formats with default client, re-requesting with WEB client.", code);
+
         YoutubeClientConfig fallbackConfig = YoutubeClientConfig.WEB.copy()
-            .withClientField("clientScreen", "EMBED")
-            .withThirdPartyEmbedUrl("https://google.com");
+            .withRootField("params", YoutubeConstants.PLAYER_PARAMS_WEB);
 
         processStatic(localExecutor, loadBestFormatWithUrl(fallbackConfig));
       }
@@ -91,7 +96,7 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
   private FormatWithUrl loadBestFormatWithUrl(YoutubeClientConfig config) throws Exception {
     try (HttpInterface httpInterface = sourceManager.getHttpInterface()) {
       YoutubeTrackDetails details = sourceManager.getTrackDetailsLoader()
-              .loadDetails(httpInterface, getIdentifier(), true, sourceManager, config);
+          .loadDetails(httpInterface, getIdentifier(), true, sourceManager, config);
 
       // If the error reason is "Video unavailable" details will return null
       if (details == null) {
@@ -103,7 +108,7 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
       YoutubeTrackFormat format = findBestSupportedFormat(formats);
 
       URI signedUrl = sourceManager.getSignatureResolver()
-              .resolveFormatUrl(httpInterface, details.getPlayerScript(), format);
+          .resolveFormatUrl(httpInterface, details.getPlayerScript(), format);
 
       return new FormatWithUrl(format, signedUrl, details.getPlayerScript());
     }

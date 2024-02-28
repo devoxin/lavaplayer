@@ -68,9 +68,12 @@ public class YoutubeHttpContextFilter extends BaseYoutubeHttpContextFilter {
 
     String userAgent = context.getAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED, String.class);
     if (context.getAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED) != null) {
-      String visitorId = tokenTracker.updateVisitorId();
       request.setHeader("User-Agent", userAgent);
-      request.setHeader("X-Goog-Visitor-Id", visitorId);
+
+      // N.B.: This doesn't look to be used for WEB clients.
+      // There's an X-Goog-Eom-Visitor-Id header, and `visitorData` field within `context.client` in request bodies.
+      // This may need revisiting in the near future to see if the header is still applicable.
+      request.setHeader("X-Goog-Visitor-Id", tokenTracker.getVisitorId());
       context.removeAttribute(ATTRIBUTE_USER_AGENT_SPECIFIED);
     }
 

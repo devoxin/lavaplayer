@@ -99,6 +99,8 @@ public class YoutubeAudioSourceManager implements AudioSourceManager, HttpConfig
     youtubeHttpContextFilter.setTokenTracker(accessTokenTracker);
     httpInterfaceManager.setHttpContextFilter(youtubeHttpContextFilter);
 
+    trackDetailsLoader.setTokenTracker(accessTokenTracker);
+
     if (!DataFormatTools.isNullOrEmpty(email) && !DataFormatTools.isNullOrEmpty(password)) {
       // Prepare master token on startup
       accessTokenTracker.updateMasterToken();
