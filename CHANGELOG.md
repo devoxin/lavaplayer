@@ -1,8 +1,18 @@
 # Change Log
 
-## [1.7.1] -- Pending
+## [1.8.0] -- 2024-03-13
 ### Fixed
 - Fixed an issue with the `SoundCloudAudioSourceManager` where it could try to decode a track with extra, custom data encoded into the base64 string.
+- Tentative fix for "Invalid status code for video page response: 400"
+  - Seems like this error is triggered by the use of a client version that's no longer within YouTube's "last 2 major versions" support.
+
+### Added
+- Add `AudioPlayer#scheduleTrack(AudioTrack, boolean)`.
+
+### Changed
+- Expose `DefaultAudioPlayer#dispatchEvent()` in subclasses.
+- Expose `DefaultPlayer`'s `scheduledTrack`, `activeTrack`, `shadowTrack`, `manager` and `trackSwitchLock` fields in subclasses.
+- Remove redundant initialization of `CompletableFuture` within `YoutubeMpegStreamAudioTrack#updateGlobalSequence()`.
 
 ## [1.7.0] -- 2024-01-27
 ### Fixed
