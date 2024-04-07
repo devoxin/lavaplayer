@@ -9,6 +9,8 @@ import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.Music;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.TvHtml5Embedded;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.Web;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.skeleton.Client;
+import com.sedmelluq.discord.lavaplayer.source.youtube2.http.YoutubeAccessTokenTracker;
+import com.sedmelluq.discord.lavaplayer.source.youtube2.http.YoutubeHttpContextFilter;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.track.YoutubeAudioTrack;
 import com.sedmelluq.discord.lavaplayer.tools.ExceptionTools;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -39,8 +41,6 @@ import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.
 public class YoutubeAudioSourceManager implements AudioSourceManager {
     // TODO: consider adding notnull/nullable annotations
     // TODO: connect timeout = 16000ms, read timeout = 8000ms (as observed from scraped youtube config)
-    // TODO: inject visitor data for non-WEB clients
-    // TODO: http context filter for automatic retrying?
     // TODO: look at possibly scraping jsUrl from WEB config to save a request
     // TODO: search providers use cookieless httpinterfacemanagers. should this do the same?
     // TODO(music): scrape config? it's identical to WEB.
@@ -53,7 +53,6 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
     private static final String DOMAIN_REGEX = "(?:www\\.|m\\.|music\\.|)youtube\\.com";
     private static final String SHORT_DOMAIN_REGEX = "(?:www\\.|)youtu\\.be";
     private static final String VIDEO_ID_REGEX = "(?<v>[a-zA-Z0-9_-]{11})";
-    private static final String PLAYLIST_ID_REGEX = "(?<list>(PL|LL|FL|UU)[a-zA-Z0-9_-]+)";
 
     private static final Pattern directVideoIdPattern = Pattern.compile("^" + VIDEO_ID_REGEX + "$");
     private static final Pattern mainDomainPattern = Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/.*");
@@ -88,9 +87,8 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
     /**
      * Construct an instance of YoutubeAudioSourceManager with the given settings
      * and clients.
-     * @param allowSearch
-     *                Whether to allow searching for tracks. If disabled, the
-     *                "ytsearch:" and "ytmsearch:" prefixes will return nothing.
+     * @param allowSearch Whether to allow searching for tracks. If disabled, the
+     *                    "ytsearch:" and "ytmsearch:" prefixes will return nothing.
      * @param clients The clients to use for track loading. They will be queried in
      *                the order they are provided.
      */
@@ -98,6 +96,11 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
         this.allowSearch = allowSearch;
         this.clients = clients == null ? new Client[0] : clients;
         this.cipherManager = new SignatureCipherManager();
+
+        YoutubeAccessTokenTracker tokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager);
+        YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
+        youtubeHttpContextFilter.setTokenTracker(tokenTracker);
+        httpInterfaceManager.setHttpContextFilter(youtubeHttpContextFilter);
     }
 
     @Override
