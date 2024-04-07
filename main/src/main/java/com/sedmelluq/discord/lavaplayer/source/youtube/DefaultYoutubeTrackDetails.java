@@ -131,17 +131,16 @@ public class DefaultYoutubeTrackDetails implements YoutubeTrackDetails {
 
     public static TemporalInfo fromRawData(boolean wasLiveStream, JsonBrowser durationSecondsField, boolean legacy) {
       long durationValue = durationSecondsField.asLong(0L);
-      boolean isActiveStream;
+
       if (wasLiveStream && !legacy) {
-        // Premiers have total duration info field but acting as usual stream so when we try play it we don't know
-        // current position of it since YT don't provide such info so assume duration is unknown.
-        isActiveStream = true;
+        // Premieres have duration information, but act as a normal stream. When we play it, we don't know the
+        // current position of it since YouTube doesn't provide such information, so assume duration is unknown.
         durationValue = 0;
-      } else {
-        // VODs are not really live streams, even though that field in JSON claims they are. If it is actually live, then
-        // duration is also missing or 0.
-        isActiveStream = wasLiveStream && durationValue == 0;
       }
+
+      // VODs are not really live streams, even though the response JSON indicates that it is.
+      // If it is actually live, then duration is also missing or 0.
+      boolean isActiveStream = wasLiveStream && durationValue == 0;
 
       return new TemporalInfo(
           isActiveStream,

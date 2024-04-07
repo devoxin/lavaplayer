@@ -42,15 +42,11 @@ public class YoutubeConstants {
     // Android auth constants
     static final String ANDROID_AUTH_URL = "https://android.googleapis.com/auth";
     static final String MASTER_TOKEN_BASE_URL = "https://youtube.minerea.su"; // https://github.com/Walkyst/YouTube-checkin
-    static final String TOKEN_BASE_PAYLOAD = "{\"email\":\"%s\",\"password\":\"%s\"";
-    static final String REFRESH_PART_PAYLOAD = ",\"refresh_token\":\"%s\"";
-    static final String CLOSE_TOKEN_BASE_PAYLOAD = "}";
-
     static final String CHECKIN_ACCOUNT_URL = MASTER_TOKEN_BASE_URL + "/checkin";
     static final String LOGIN_ACCOUNT_URL = MASTER_TOKEN_BASE_URL + "/login";
     static final String SAVE_ACCOUNT_URL = MASTER_TOKEN_BASE_URL + "/tv";
-    static final String TOKEN_PAYLOAD = TOKEN_BASE_PAYLOAD + CLOSE_TOKEN_BASE_PAYLOAD;
-    static final String TOKEN_REFRESH_PAYLOAD = TOKEN_BASE_PAYLOAD + REFRESH_PART_PAYLOAD + CLOSE_TOKEN_BASE_PAYLOAD;
+    static final String TOKEN_PAYLOAD = "{\"email\":\"%s\",\"password\":\"%s\"}";
+    static final String TOKEN_REFRESH_PAYLOAD = "{\"email\":\"%s\",\"password\":\"%s\",\"refresh_token\":\"%s\"}";
 
     // Utility constants
     static final String WATCH_URL_PREFIX = YOUTUBE_ORIGIN + "/watch?v=";
