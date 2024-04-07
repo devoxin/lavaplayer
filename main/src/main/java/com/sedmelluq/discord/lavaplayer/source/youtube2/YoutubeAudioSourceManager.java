@@ -110,6 +110,19 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
 
     @Override
     public AudioItem loadItem(AudioPlayerManager manager, AudioReference reference) {
+        try {
+            return loadItemOnce(reference);
+        } catch (FriendlyException exception) {
+            // In case of a connection reset exception, try once more.
+            if (HttpClientTools.isRetriableNetworkException(exception.getCause())) {
+                return loadItemOnce(reference);
+            } else {
+                throw exception;
+            }
+        }
+    }
+
+    public AudioItem loadItemOnce(AudioReference reference) {
         Throwable lastException = null;
 
         try (HttpInterface httpInterface = httpInterfaceManager.getInterface()) {
