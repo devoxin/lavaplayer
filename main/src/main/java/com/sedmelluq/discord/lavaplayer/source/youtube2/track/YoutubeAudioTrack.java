@@ -197,40 +197,6 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
     return true;
   }
 
-//  //  private void processStaticWithClientRetry(LocalAudioTrackExecutor localExecutor) throws Exception {
-////    for (int i = 0; i < CLIENT_CONFIG_SEQUENCE.length; i++) {
-////      log.warn("Encountered 403 whilst trying to play {}, retrying with client {}", this.trackInfo.identifier, CLIENT_CONFIG_SEQUENCE[i].getName());
-////      FormatWithUrl format = loadBestFormatWithUrl(CLIENT_CONFIG_SEQUENCE[i]);
-////
-////      try {
-////        processStatic(localExecutor, format);
-////        return;
-////      } catch (RuntimeException e) {
-////        if (!e.getMessage().equals("Not success status code: 403") || i == CLIENT_CONFIG_SEQUENCE.length - 1) {
-////          throw e;
-////        }
-////      }
-////    }
-////  }
-//
-////  private void processWithFormat(LocalAudioTrackExecutor localExecutor, HttpInterface httpInterface, FormatWithUrl format) throws Exception {
-////    for (int i = MAX_RETRIES; i > 0; i--) {
-////      try {
-////
-////      } catch (RuntimeException e) {
-////        if (i > 1 && e.getMessage().equals("Not success status code: 403")) {
-////          log.warn("Received 403 response when attempting to load track. Retrying (attempt {}/{})", (MAX_RETRIES - i) + 1, MAX_RETRIES);
-////          continue;
-////        }
-////
-////        log.warn("Failed to play {}\n\tCiphered URL: {}\n\tDeciphered URL: {}\n\tSignature Key: {}\n\tSignature: {}\n\tPlayer Script URL: {}\n\tFormat String:{}",
-////                trackInfo.identifier, format.details.getUrl().toString(), format.signedUrl, format.details.getSignatureKey(), format.details.getSignature(),
-////                format.playerScriptUrl, format.details.getExtra());
-////        throw e;
-////      }
-////    }
-////  }
-//
   private static class FormatWithUrl {
     private final YoutubeStreamFormat format;
     private final URI signedUrl;
