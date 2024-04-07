@@ -1,13 +1,8 @@
 package com.sedmelluq.discord.lavaplayer.source.youtube2.clients;
 
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeClientConfig;
-import com.sedmelluq.discord.lavaplayer.source.youtube2.CannotBeLoaded;
-import com.sedmelluq.discord.lavaplayer.source.youtube2.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.skeleton.MusicClient;
-import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
-import com.sedmelluq.discord.lavaplayer.track.AudioItem;
-import org.apache.http.client.methods.HttpPost;
 
 public class Music extends MusicClient {
     protected YoutubeClientConfig baseConfig = new YoutubeClientConfig()

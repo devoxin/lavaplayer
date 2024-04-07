@@ -1,7 +1,6 @@
 package com.sedmelluq.discord.lavaplayer.source.youtube2.clients;
 
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeClientConfig;
-import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.skeleton.NonMusicClient;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.clients.skeleton.StreamingNonMusicClient;
 import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;

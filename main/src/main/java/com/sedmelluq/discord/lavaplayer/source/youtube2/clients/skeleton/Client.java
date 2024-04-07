@@ -9,7 +9,6 @@ import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import javax.print.DocFlavor.STRING;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;

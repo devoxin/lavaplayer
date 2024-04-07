@@ -1,6 +1,7 @@
 package com.sedmelluq.discord.lavaplayer.source.youtube2.cipher;
 
-import com.sedmelluq.discord.lavaplayer.source.youtube.*;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeCipherOperation;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeCipherOperationType;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.track.YoutubeStreamFormat;
 import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
 import com.sedmelluq.discord.lavaplayer.tools.ExceptionTools;

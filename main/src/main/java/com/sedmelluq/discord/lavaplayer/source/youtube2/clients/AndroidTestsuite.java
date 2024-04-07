@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.source.youtube2.CannotBeLoaded;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity;
-import com.sedmelluq.discord.lavaplayer.tools.JsonBrowser;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
 import com.sedmelluq.discord.lavaplayer.track.AudioItem;
 

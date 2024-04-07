@@ -3,7 +3,8 @@ package com.sedmelluq.discord.lavaplayer.source.youtube2.track;
 import com.sedmelluq.discord.lavaplayer.container.matroska.MatroskaAudioTrack;
 import com.sedmelluq.discord.lavaplayer.container.mpeg.MpegAudioTrack;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.*;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeMpegStreamAudioTrack;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubePersistentHttpStream;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.CannotBeLoaded;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.UrlTools;
 import com.sedmelluq.discord.lavaplayer.source.youtube2.UrlTools.UrlInfo;
@@ -55,8 +56,6 @@ public class YoutubeAudioTrack extends DelegatedAudioTrack {
         if (!client.supportsFormatLoading()) {
           continue;
         }
-
-        System.out.printf("Playing track with client %s%n", client.getIdentifier());
 
         try {
           processWithClient(localExecutor, httpInterface, client, 0);

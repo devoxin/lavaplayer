@@ -6,8 +6,6 @@ import org.apache.http.entity.ContentType;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static com.sedmelluq.discord.lavaplayer.container.Formats.MIME_AUDIO_WEBM;
-
 /**
  * Describes an available media format for a track
  */
