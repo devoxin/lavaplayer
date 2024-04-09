@@ -161,7 +161,7 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
         }
 
         if (lastException != null) {
-            throw new FriendlyException("This video cannot be loaded.", Severity.SUSPICIOUS, lastException);
+            throw ExceptionTools.wrapUnfriendlyExceptions("This video cannot be loaded.", SUSPICIOUS, lastException);
         }
 
         return null;
