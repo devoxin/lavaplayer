@@ -365,6 +365,7 @@ public class OggPacketInputStream extends InputStream {
 
     long absoluteOffset = Math.max(pageHeader.byteStreamPosition, inputStream.getContentLength() - tailLength);
     inputStream.seek(absoluteOffset);
+//    inputStream.skipFully(absoluteOffset - inputStream.getPosition());
 
     byte[] data = new byte[tailLength];
     int dataLength = StreamTools.readUntilEnd(inputStream, data, 0, data.length);

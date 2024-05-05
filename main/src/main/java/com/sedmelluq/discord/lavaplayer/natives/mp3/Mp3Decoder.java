@@ -154,7 +154,7 @@ public class Mp3Decoder extends NativeResourceHolder {
 
   private static final int[] SAMPLE_RATE_BASE = { 11025, 12000, 8000 };
 
-  public static enum MpegVersion {
+  public enum MpegVersion {
     MPEG_1(4, 1152, new int[] { 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 }),
     MPEG_2(2, 576, new int[] { 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }),
     MPEG_2_5(1, MPEG_2.samplesPerFrame, MPEG_2.bitrateIndex);
@@ -167,16 +167,16 @@ public class Mp3Decoder extends NativeResourceHolder {
       // 2 - MPEG 2
       // 3 - MPEG 1
       int index = (buffer[offset + 1] & 0x18) >> 3;
-        switch (index) {
-          case 0:
-            return MPEG_2_5;
-          case 2:
-            return MPEG_2;
-          case 3:
-            return MPEG_1;
-          default:
-            throw new IllegalArgumentException("Invalid version");
-        }
+      switch (index) {
+        case 0:
+          return MPEG_2_5;
+        case 2:
+          return MPEG_2;
+        case 3:
+          return MPEG_1;
+        default:
+          throw new IllegalArgumentException("Invalid version");
+      }
     }
 
     private static int getMaxFrameSize() {

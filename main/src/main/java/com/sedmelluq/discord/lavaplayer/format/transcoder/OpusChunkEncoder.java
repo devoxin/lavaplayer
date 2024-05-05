@@ -22,6 +22,9 @@ public class OpusChunkEncoder implements AudioChunkEncoder {
   public OpusChunkEncoder(AudioConfiguration configuration, AudioDataFormat format) {
     encodedBuffer = ByteBuffer.allocateDirect(format.maximumChunkSize());
     encoder = new OpusEncoder(format.sampleRate, format.channelCount, configuration.getOpusEncodingQuality());
+
+    configuration.getOpusEncoderConfiguration().apply(encoder);
+
     this.format = format;
   }
 

@@ -9,6 +9,10 @@ import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameProvider;
  * An audio player that is capable of playing audio tracks and provides audio frames from the currently playing track.
  */
 public interface AudioPlayer extends AudioFrameProvider {
+  default AudioConfiguration getConfiguration() {
+    throw new UnsupportedOperationException();
+  }
+
   /**
    * @return Currently playing track, or null
    */

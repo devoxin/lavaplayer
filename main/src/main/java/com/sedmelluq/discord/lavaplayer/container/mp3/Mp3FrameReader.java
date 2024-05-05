@@ -95,12 +95,12 @@ public class Mp3FrameReader {
         || !Mp3Decoder.isValidFrame(scanBuffer, offset);
 
     if (invalid) {
-        return false;
+      return false;
     }
 
     frameSize = Mp3Decoder.getFrameSize(scanBuffer, offset);
     for (int i = 0; i < HEADER_SIZE; i++) {
-        frameBuffer[i] = scanBuffer[offset + i];
+      frameBuffer[i] = scanBuffer[offset + i];
     }
 
     frameBufferPosition = HEADER_SIZE;

@@ -58,12 +58,12 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
     private static final Pattern mainDomainPattern = Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/.*");
     private static final Pattern shortHandPattern = Pattern.compile("^" + PROTOCOL_REGEX + "(?:" + DOMAIN_REGEX + "/(?:live|embed|shorts)|" + SHORT_DOMAIN_REGEX + ")/(?<id>.*)");
 
-
     protected HttpInterfaceManager httpInterfaceManager = HttpClientTools.createDefaultThreadLocalManager();
     protected boolean allowSearch;
     protected Client[] clients;
 
     protected SignatureCipherManager cipherManager;
+    protected YoutubeHttpContextFilter httpContextFilter;
 
     public YoutubeAudioSourceManager() {
         this(true);
@@ -98,14 +98,24 @@ public class YoutubeAudioSourceManager implements AudioSourceManager {
         this.cipherManager = new SignatureCipherManager();
 
         YoutubeAccessTokenTracker tokenTracker = new YoutubeAccessTokenTracker(httpInterfaceManager);
-        YoutubeHttpContextFilter youtubeHttpContextFilter = new YoutubeHttpContextFilter();
-        youtubeHttpContextFilter.setTokenTracker(tokenTracker);
-        httpInterfaceManager.setHttpContextFilter(youtubeHttpContextFilter);
+        this.httpContextFilter = new YoutubeHttpContextFilter();
+        this.httpContextFilter.setTokenTracker(tokenTracker);
+        httpInterfaceManager.setHttpContextFilter(this.httpContextFilter);
     }
 
     @Override
     public String getSourceName() {
         return "youtube";
+    }
+
+    public YoutubeHttpContextFilter getHttpContextFilter() {
+        return this.httpContextFilter;
+    }
+
+    public void setPlaylistPageCount(int count) {
+        for (Client client : clients) {
+            client.setPlaylistPageCount(count);
+        }
     }
 
     @Override

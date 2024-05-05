@@ -115,11 +115,7 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
    */
   public void provideFrames() throws InterruptedException {
     try {
-      while (true) {
-        if (!frameReader.fillFrameBuffer()) {
-          break;
-        }
-
+      while (frameReader.fillFrameBuffer()) {
         inputBuffer.clear();
         inputBuffer.put(frameBuffer, 0, frameReader.getFrameSize());
         inputBuffer.flip();
@@ -192,35 +188,41 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
   }
 
   private void skipIdv3Tags() throws IOException {
-    dataInput.readFully(tagHeaderBuffer, 0, 3);
+    byte[] lastTagHeader = new byte[4];
 
-    for (int i = 0; i < 3; i++) {
-      if (tagHeaderBuffer[i] != IDV3_TAG[i]) {
-        frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
+    while (true) {
+      System.arraycopy(tagHeaderBuffer, 0, lastTagHeader, 0, 4);
+      dataInput.readFully(tagHeaderBuffer, 0, 3);
+
+      for (int i = 0; i < 3; i++) {
+        if (tagHeaderBuffer[i] != IDV3_TAG[i]) {
+          frameReader.appendToScanBuffer(tagHeaderBuffer, 0, 3);
+          System.arraycopy(lastTagHeader, 0, tagHeaderBuffer, 0, 4);
+          return;
+        }
+      }
+
+      int majorVersion = dataInput.readByte() & 0xFF;
+      // Minor version
+      dataInput.readByte();
+
+      if (majorVersion < 2 || majorVersion > 5) {
         return;
       }
+
+      int flags = dataInput.readByte() & 0xFF;
+      int tagsSize = readSyncProofInteger();
+
+      long tagsEndPosition = inputStream.getPosition() + tagsSize;
+
+      skipExtendedHeader(flags);
+
+      if (majorVersion < 5) {
+        parseIdv3Frames(majorVersion, tagsEndPosition);
+      }
+
+      inputStream.seek(tagsEndPosition);
     }
-
-    int majorVersion = dataInput.readByte() & 0xFF;
-    // Minor version
-    dataInput.readByte();
-
-    if (majorVersion < 2 || majorVersion > 5) {
-      return;
-    }
-
-    int flags = dataInput.readByte() & 0xFF;
-    int tagsSize = readSyncProofInteger();
-
-    long tagsEndPosition = inputStream.getPosition() + tagsSize;
-
-    skipExtendedHeader(flags);
-
-    if (majorVersion < 5) {
-      parseIdv3Frames(majorVersion, tagsEndPosition);
-    }
-
-    inputStream.seek(tagsEndPosition);
   }
 
   private int readSyncProofInteger() throws IOException {
@@ -273,13 +275,13 @@ public class Mp3TrackProvider implements AudioTrackInfoProvider {
 
     switch (encoding) {
       case 0:
-        return new String(data, 0, size - (shortTerminator ? 2 : 1), "ISO-8859-1");
+        return new String(data, 0, size - (shortTerminator ? 2 : 1), StandardCharsets.ISO_8859_1);
       case 1:
-        return new String(data, 0, size - (wideTerminator ? 3 : 1), "UTF-16");
+        return new String(data, 0, size - (wideTerminator ? 3 : 1), StandardCharsets.UTF_16);
       case 2:
-        return new String(data, 0, size - (wideTerminator ? 3 : 1), "UTF-16BE");
+        return new String(data, 0, size - (wideTerminator ? 3 : 1), StandardCharsets.UTF_16BE);
       case 3:
-        return new String(data, 0, size - (shortTerminator ? 2 : 1), "UTF-8");
+        return new String(data, 0, size - (shortTerminator ? 2 : 1), StandardCharsets.UTF_8);
       default:
         return null;
     }

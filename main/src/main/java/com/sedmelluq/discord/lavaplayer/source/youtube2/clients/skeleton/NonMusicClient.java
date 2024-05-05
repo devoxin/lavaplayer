@@ -104,7 +104,7 @@ public abstract class NonMusicClient implements Client {
 
         if (videoDetails.isNull()) {
             throw new FriendlyException("Loading information for for video failed", Severity.SUSPICIOUS,
-                new RuntimeException("Missing videoDetails block, json: " + json.format()));
+                new RuntimeException("Missing videoDetails block, JSON: " + json.format()));
         }
 
         if (!videoId.equals(videoDetails.get("videoId").text())) {

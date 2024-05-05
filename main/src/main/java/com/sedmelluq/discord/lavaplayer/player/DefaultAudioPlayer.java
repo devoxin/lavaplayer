@@ -36,6 +36,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
   private final CopyOnUpdateIdentityList<AudioEventListener> listeners;
   protected final Object trackSwitchLock;
   private final AudioPlayerOptions options;
+  private AudioConfiguration configuration;
 
   /**
    * @param manager Audio player manager which this player is attached to
@@ -47,6 +48,19 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
     listeners = new CopyOnUpdateIdentityList<>();
     trackSwitchLock = new Object();
     options = new AudioPlayerOptions();
+  }
+
+  private AudioConfiguration getMainConfiguration() {
+    return this.configuration == null ? manager.getConfiguration() : this.configuration;
+  }
+
+  @Override
+  public AudioConfiguration getConfiguration() {
+    if (configuration == null) {
+      configuration = manager.getConfiguration().copy();
+    }
+
+    return configuration;
   }
 
   /**
@@ -84,7 +98,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
       InternalAudioTrack newTrack = (InternalAudioTrack) track;
       scheduledTrack = newTrack;
 
-      manager.executeTrack(this, newTrack, manager.getConfiguration(), options);
+      manager.executeTrack(this, newTrack, getMainConfiguration(), options);
     }
 
     return true;
@@ -139,7 +153,7 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
 
     dispatchEvent(new TrackStartEvent(this, newTrack));
 
-    manager.executeTrack(this, newTrack, manager.getConfiguration(), options);
+    manager.executeTrack(this, newTrack, getMainConfiguration(), options);
     return true;
   }
 

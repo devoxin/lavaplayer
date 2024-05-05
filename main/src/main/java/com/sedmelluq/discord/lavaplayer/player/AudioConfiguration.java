@@ -16,6 +16,7 @@ public class AudioConfiguration {
   private volatile AudioDataFormat outputFormat;
   private volatile boolean filterHotSwapEnabled;
   private volatile AudioFrameBufferFactory frameBufferFactory;
+  private final OpusEncoderConfiguration opusEncoderConfiguration;
 
   /**
    * Create a new configuration with default values.
@@ -26,6 +27,7 @@ public class AudioConfiguration {
     outputFormat = StandardAudioDataFormats.DISCORD_OPUS;
     filterHotSwapEnabled = false;
     frameBufferFactory = AllocatingAudioFrameBuffer::new;
+    opusEncoderConfiguration = new OpusEncoderConfiguration();
   }
 
   public ResamplingQuality getResamplingQuality() {
@@ -73,6 +75,15 @@ public class AudioConfiguration {
     return this;
   }
 
+  public OpusEncoderConfiguration getOpusEncoderConfiguration() {
+    return this.opusEncoderConfiguration;
+  }
+
+  public AudioConfiguration setOpusEncoderConfiguration(OpusEncoderConfiguration other) {
+    this.opusEncoderConfiguration.copyFrom(other);
+    return this;
+  }
+
   /**
    * @return A copy of this configuration.
    */
@@ -82,7 +93,8 @@ public class AudioConfiguration {
             .setOpusEncodingQuality(opusEncodingQuality)
             .setOutputFormat(outputFormat)
             .setFilterHotSwapEnabled(filterHotSwapEnabled)
-            .setFrameBufferFactory(frameBufferFactory);
+            .setFrameBufferFactory(frameBufferFactory)
+            .setOpusEncoderConfiguration(opusEncoderConfiguration);
   }
 
   /**

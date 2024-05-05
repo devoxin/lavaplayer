@@ -19,7 +19,7 @@ class AacDecoderLibrary {
 
   native void destroy(long instance);
 
-  native int configure(long instance, long bufferData);
+  native int configure(long instance, byte[] config);
 
   native int fill(long instance, ByteBuffer directBuffer, int offset, int length);
 

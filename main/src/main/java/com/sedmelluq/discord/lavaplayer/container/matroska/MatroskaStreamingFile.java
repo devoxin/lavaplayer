@@ -16,6 +16,9 @@ import java.util.List;
 public class MatroskaStreamingFile {
   private final MatroskaFileReader reader;
 
+  private String title;
+  private String artist;
+
   private long timecodeScale = 1000000;
   private double duration;
   private final ArrayList<MatroskaFileTrack> trackList = new ArrayList<>();
@@ -40,6 +43,17 @@ public class MatroskaStreamingFile {
    */
   public long getTimecodeScale() {
     return timecodeScale;
+  }
+
+  /**
+   * @return The title for this file.
+   */
+  public String getTitle() {
+    return title;
+  }
+
+  public String getArtist() {
+    return artist;
   }
 
   /**
@@ -86,8 +100,7 @@ public class MatroskaStreamingFile {
 
     if (segmentElement.is(MatroskaElementType.Segment)) {
       parseSegmentElement(segmentElement);
-    }
-    else {
+    } else {
       throw new RuntimeException(String.format("Segment not the second element in the file: was %s (%d) instead",
           segmentElement.getType().name(), segmentElement.getId()));
     }
@@ -115,6 +128,8 @@ public class MatroskaStreamingFile {
     while ((child = reader.readNextElement(segmentElement)) != null) {
       if (child.is(MatroskaElementType.Info)) {
         parseSegmentInfo(child);
+      } else if (child.is(MatroskaElementType.Tags)) {
+        parseTags(child);
       } else if (child.is(MatroskaElementType.Tracks)) {
         parseTracks(child);
       } else if (child.is(MatroskaElementType.Cluster)) {
@@ -377,6 +392,49 @@ public class MatroskaStreamingFile {
         duration = reader.asDouble(child);
       } else if (child.is(MatroskaElementType.TimecodeScale)) {
         timecodeScale = reader.asLong(child);
+      } else if (child.is(MatroskaElementType.Title)) {
+        title = reader.asString(child);
+      }
+
+      reader.skip(child);
+    }
+  }
+
+  private void parseTags(MatroskaElement tagsElement) throws IOException {
+    MatroskaElement child;
+
+    while ((child = reader.readNextElement(tagsElement)) != null) {
+      if (child.is(MatroskaElementType.Tag)) {
+        parseTag(child);
+      }
+
+      reader.skip(child);
+    }
+  }
+
+  private void parseTag(MatroskaElement tagElement) throws IOException {
+    MatroskaElement child;
+
+    while ((child = reader.readNextElement(tagElement)) != null) {
+      if (child.is(MatroskaElementType.SimpleTag)) {
+        parseSimpleTag(child);
+      }
+
+      reader.skip(child);
+    }
+  }
+
+  private void parseSimpleTag(MatroskaElement simpleTagElement) throws IOException {
+    MatroskaElement child;
+    String tagName = null;
+
+    while ((child = reader.readNextElement(simpleTagElement)) != null) {
+      if (child.is(MatroskaElementType.TagName)) {
+        tagName = reader.asString(child);
+      } else if (child.is(MatroskaElementType.TagString)) {
+        if ("artist".equalsIgnoreCase(tagName)) {
+          artist = reader.asString(child);
+        }
       }
 
       reader.skip(child);

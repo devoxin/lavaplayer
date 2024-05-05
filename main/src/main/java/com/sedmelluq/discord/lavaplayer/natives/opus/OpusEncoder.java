@@ -26,6 +26,10 @@ public class OpusEncoder extends NativeResourceHolder {
     }
   }
 
+  public int configure(int request, int value) {
+    return library.configure(instance, request, value);
+  }
+
   /**
    * Encode the input buffer to output.
    * @param directInput Input sample buffer

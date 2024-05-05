@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.tools.io.DirectBufferStreamBroker;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,12 +48,13 @@ public class OggOpusCodecHandler implements OggCodecHandler {
   public OggMetadata loadMetadata(OggPacketInputStream stream, DirectBufferStreamBroker broker) throws IOException {
     ByteBuffer firstPacket = broker.getBuffer();
     verifyFirstPacket(firstPacket);
+    int sampleRate = getSampleRate(firstPacket);
 
     loadCommentsHeader(stream, broker, false);
 
     return new OggMetadata(
         parseTags(broker.getBuffer(), broker.isTruncated()),
-        detectLength(stream, getSampleRate(firstPacket))
+        detectLength(stream, sampleRate)
     );
   }
 

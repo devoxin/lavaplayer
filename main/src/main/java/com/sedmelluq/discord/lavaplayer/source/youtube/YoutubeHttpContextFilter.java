@@ -49,11 +49,6 @@ public class YoutubeHttpContextFilter extends BaseYoutubeHttpContextFilter {
   }
 
   @Override
-  public void onContextClose(HttpClientContext context) {
-
-  }
-
-  @Override
   public void onRequest(HttpClientContext context, HttpUriRequest request, boolean isRepetition) {
     if (!isRepetition) {
       context.removeAttribute(ATTRIBUTE_RESET_RETRY);

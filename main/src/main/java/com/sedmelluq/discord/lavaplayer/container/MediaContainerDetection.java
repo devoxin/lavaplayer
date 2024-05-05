@@ -114,7 +114,7 @@ public class MediaContainerDetection {
    * a wildcard, which means the value of this byte does not matter.
    *
    * @param stream Input stream to read the bytes from
-   * @param match Bytes that the next bytes from input stream should match (-1 as wildcard
+   * @param match Bytes that the next bytes from input stream should match (-1 as wildcard)
    * @param rewind If set to true, restores the original position of the stream after checking
    * @return True if the bytes matched
    * @throws IOException On IO error

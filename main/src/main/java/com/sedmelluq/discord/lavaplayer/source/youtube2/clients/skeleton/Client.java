@@ -49,9 +49,9 @@ public interface Client {
             case "ERROR":
                 String reason = playabilityStatus.get("reason").text();
 
-                if (reason.contains("This video is unavailable")) {
-                    throw new CannotBeLoaded(new FriendlyException(reason, COMMON, null));
-                }
+//                if (reason.contains("This video is unavailable")) {
+//                    throw new CannotBeLoaded(new FriendlyException(reason, COMMON, null));
+//                }
 
                 throw new FriendlyException(reason, COMMON, null);
             case "UNPLAYABLE":
