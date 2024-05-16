@@ -49,11 +49,11 @@ public class MatroskaStreamingFile {
    * @return The title for this file.
    */
   public String getTitle() {
-    return title;
+    return title != null && title.isEmpty() ? null : title;
   }
 
   public String getArtist() {
-    return artist;
+    return artist != null && artist.isEmpty() ? null : artist;
   }
 
   /**
@@ -392,7 +392,7 @@ public class MatroskaStreamingFile {
         duration = reader.asDouble(child);
       } else if (child.is(MatroskaElementType.TimecodeScale)) {
         timecodeScale = reader.asLong(child);
-      } else if (child.is(MatroskaElementType.Title)) {
+      } else if (child.is(MatroskaElementType.Title) && title == null) {
         title = reader.asString(child);
       }
 
@@ -432,7 +432,9 @@ public class MatroskaStreamingFile {
       if (child.is(MatroskaElementType.TagName)) {
         tagName = reader.asString(child);
       } else if (child.is(MatroskaElementType.TagString)) {
-        if ("artist".equalsIgnoreCase(tagName)) {
+        if ("title".equalsIgnoreCase(tagName) && title == null) {
+          title = reader.asString(child);
+        } else if ("artist".equalsIgnoreCase(tagName)) {
           artist = reader.asString(child);
         }
       }

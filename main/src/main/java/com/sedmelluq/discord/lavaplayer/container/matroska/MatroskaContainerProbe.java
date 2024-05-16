@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetectionResult;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerProbe;
 import com.sedmelluq.discord.lavaplayer.container.matroska.format.MatroskaFileTrack;
+import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -57,13 +58,10 @@ public class MatroskaContainerProbe implements MediaContainerProbe {
       return unsupportedFormat(this, "No supported audio tracks present in the file.");
     }
 
-    String title = file.getTitle();
-    String actualTitle = title == null || title.isEmpty() ? UNKNOWN_TITLE : title;
+    String title = DataFormatTools.defaultOnNull(file.getTitle(), UNKNOWN_TITLE);
+    String artist = DataFormatTools.defaultOnNull(file.getArtist(), UNKNOWN_ARTIST);
 
-    String artist = file.getArtist();
-    String actualArtist = artist == null || artist.isEmpty() ? UNKNOWN_ARTIST : artist;
-
-    return supportedFormat(this, null, new AudioTrackInfo(actualTitle, actualArtist,
+    return supportedFormat(this, null, new AudioTrackInfo(title, artist,
         (long) file.getDuration(), reference.identifier, false, reference.identifier));
   }
 
