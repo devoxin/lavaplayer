@@ -83,12 +83,14 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
    * this function will return false
    * @param track The track to schedule. This will overwrite the currently scheduled track, if one exists.
    *              Passing null will clear the current scheduled track.
-   * @return True if the track was scheduled
+   * @return True if the track was scheduled. If null is passed, this will always be false.
    */
   public boolean scheduleTrack(AudioTrack track) {
-    if (activeTrack == null) {
+    if (activeTrack == null && track != null) {
       return false;
     }
+
+    boolean scheduled = false;
 
     synchronized (trackSwitchLock) {
       if (scheduledTrack != null) {
@@ -98,10 +100,13 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
       InternalAudioTrack newTrack = (InternalAudioTrack) track;
       scheduledTrack = newTrack;
 
-      manager.executeTrack(this, newTrack, getMainConfiguration(), options);
+      if (activeTrack != null && track != null) {
+        manager.executeTrack(this, newTrack, getMainConfiguration(), options);
+        scheduled = true;
+      }
     }
 
-    return true;
+    return scheduled;
   }
 
   /**
