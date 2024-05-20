@@ -2,7 +2,8 @@
 
 ## [1.9.0] -- Pending
 ### Fixed
-- Fixed some issues with AAC decoder initialisation.
+- Fixed some issues with AAC decoder initialisation caused by track configuration mangling.
+- Fixed AAC decoder configuration not accounting for extended configurations with SBR and PS profiles.
 - Fixed handling of passing `null` to `DefaultAudioPlayer#scheduleTrack`
 - Fixed handling of some MP3 files with multiple IDv3 blocks.
 - Fixed metadata extraction for some Ogg files.
