@@ -119,8 +119,7 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   }
 
   private boolean attemptConnect(boolean skipStatusCheck, boolean retryOnServerError) throws IOException {
-    HttpUriRequest request = getConnectRequest();
-    currentResponse = httpInterface.execute(request);
+    currentResponse = httpInterface.execute(getConnectRequest());
     lastStatusCode = currentResponse.getStatusLine().getStatusCode();
 
     if (!skipStatusCheck && !validateStatusCode(currentResponse, retryOnServerError)) {
@@ -142,12 +141,6 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
         contentLength = Long.parseLong(header.getValue());
       }
     }
-
-//    if (position > 0 && request.containsHeader(HttpHeaders.RANGE)) {
-//      if (!currentResponse.containsHeader(HttpHeaders.CONTENT_RANGE) && lastStatusCode != HttpStatus.SC_PARTIAL_CONTENT) {
-//        skipFully(position);
-//      }
-//    }
 
     return true;
   }
@@ -207,9 +200,7 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
 
     try {
       long result = currentContent.skip(n);
-      if (result >= 0) {
-        position += result;
-      }
+      position += result;
       return result;
     } catch (IOException e) {
       handleNetworkException(e, attemptReconnect);

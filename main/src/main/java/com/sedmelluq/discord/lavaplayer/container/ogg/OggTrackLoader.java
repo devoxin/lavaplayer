@@ -6,12 +6,15 @@ import com.sedmelluq.discord.lavaplayer.container.ogg.vorbis.OggVorbisCodecHandl
 import com.sedmelluq.discord.lavaplayer.tools.io.DirectBufferStreamBroker;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.stream.Stream;
 
 /**
  * Track loader for an OGG packet stream. Automatically detects the track codec and loads the specific track handler.
  */
 public class OggTrackLoader {
+  private static final int THEORA_VIDEO = ByteBuffer.wrap(new byte[] { (byte) 0x80, 't', 'h', 'e' }).getInt();
+
   private static final OggCodecHandler[] TRACK_PROVIDERS = new OggCodecHandler[] {
       new OggOpusCodecHandler(),
       new OggFlacCodecHandler(),
