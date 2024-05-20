@@ -14,16 +14,20 @@ import java.nio.ShortBuffer;
  * layer. The only AAC type verified to work with this is AAC_LC.
  */
 public class AacDecoder extends NativeResourceHolder {
+  private static final int[] SAMPLERATE_TABLE = { 96000, 88200, 64000, 48000, 44100,
+      32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350 };
+
   private static final int TRANSPORT_NONE = 0;
+
+  // profiles
+  public static final int AAC_LC = 2;
+  public static final int SBR = 5; // HE-AAC
+  public static final int PS = 29; // HE-AACv2
 
   private static final ShortBuffer NO_BUFFER = ByteBuffer.allocateDirect(0).asShortBuffer();
 
   private static final int ERROR_NOT_ENOUGH_BITS = 4098;
   private static final int ERROR_OUTPUT_BUFFER_TOO_SMALL = 8204;
-
-  public static final int AAC_LC = 2;
-  public static final int SBR = 5; // HE-AAC
-  public static final int PS = 29; // HE-AACv2
 
   private final AacDecoderLibrary library;
   private final long instance;
@@ -45,7 +49,10 @@ public class AacDecoder extends NativeResourceHolder {
    * @throws IllegalStateException If the decoder has already been closed.
    */
   public int configure(int objectType, int frequency, int channels) {
-    byte[] buffer = encodeConfiguration(objectType, frequency, channels);
+    int extensionFrequency = isSbrOrPs(objectType) ? frequency * 2 : frequency;
+    int extensionProfile = isSbrOrPs(objectType) ? AAC_LC : objectType;
+
+    byte[] buffer = encodeConfiguration(objectType, frequency, channels, extensionFrequency, extensionProfile);
     return configure(buffer);
   }
 
@@ -65,6 +72,10 @@ public class AacDecoder extends NativeResourceHolder {
     return library.configure(instance, config);
   }
 
+  private static boolean isSbrOrPs(int objectType) {
+    return objectType == SBR || objectType == PS;
+  }
+
 //  private synchronized int configureRaw(long buffer) {
 //    if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
 //      buffer = Long.reverseBytes(buffer);
@@ -73,7 +84,11 @@ public class AacDecoder extends NativeResourceHolder {
 //    return library.configure(instance, buffer);
 //  }
 
-  private static byte[] encodeConfiguration(int objectType, int frequency, int channels) {
+  private static byte[] encodeConfiguration(int objectType,
+                                            int frequency,
+                                            int channels,
+                                            int extensionFrequency,
+                                            int extensionProfile) {
     try {
       ByteBuffer buffer = ByteBuffer.allocate(8);
       buffer.order(ByteOrder.nativeOrder());
@@ -89,6 +104,18 @@ public class AacDecoder extends NativeResourceHolder {
       }
 
       bitWriter.write(channels, 4);
+
+      if (isSbrOrPs(objectType)) {
+        int extensionFrequencyIndex = getFrequencyIndex(extensionFrequency);
+        bitWriter.write(extensionFrequencyIndex, 4);
+
+        if (extensionFrequencyIndex == 15) {
+          bitWriter.write(extensionFrequency, 24);
+        }
+
+        bitWriter.write(extensionProfile, 5);
+      }
+
       bitWriter.flush();
 
       buffer.clear();
@@ -100,22 +127,13 @@ public class AacDecoder extends NativeResourceHolder {
   }
 
   private static int getFrequencyIndex(int frequency) {
-    switch (frequency) {
-      case 96000: return 0;
-      case 88200: return 1;
-      case 64000: return 2;
-      case 48000: return 3;
-      case 44100: return 4;
-      case 32000: return 5;
-      case 24000: return 6;
-      case 22050: return 7;
-      case 16000: return 8;
-      case 12000: return 9;
-      case 11025: return 10;
-      case 8000: return 11;
-      case 7350: return 12;
-      default: return 15;
+    for (int i = 0; i < SAMPLERATE_TABLE.length; i++) {
+      if (SAMPLERATE_TABLE[i] == frequency) {
+        return i;
+      }
     }
+
+    return 15;
   }
 
   /**
