@@ -70,6 +70,11 @@ public class DefaultSoundCloudPlaylistLoader implements SoundCloudPlaylistLoader
       String kind = rootData.get("kind").text();
       JsonBrowser playlistData = dataReader.findPlaylistData(rootData, kind);
 
+      if (playlistData == null) {
+        throw new FriendlyException("Loading playlist from SoundCloud failed", SUSPICIOUS,
+            new RuntimeException("Failed to extract playlist data, JSON: " + rootData.format()));
+      }
+
       return new BasicAudioPlaylist(
           dataReader.readPlaylistName(playlistData),
           loadPlaylistTracks(httpInterface, playlistData, trackFactory),
