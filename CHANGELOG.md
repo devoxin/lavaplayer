@@ -1,5 +1,23 @@
 # Change Log
 
+## [1.9.0] -- Pending
+### Fixed
+- Fixed some issues with AAC decoder initialisation.
+- Fixed handling of passing `null` to `DefaultAudioPlayer#scheduleTrack`
+- Fixed handling of some MP3 files with multiple IDv3 blocks.
+- Fixed metadata extraction for some Ogg files.
+- Fixed duration extraction for some Ogg opus files.
+- Fixed an issue where the `PcmChunkEncoder` wouldn't force `BIG_ENDIAN` byte order.
+- Fixed an issue where sometimes an error would be thrown when initialising the Twitch source manager.
+
+### Added
+- Added basic metadata extraction for Matroska files.
+- Added support for configuring the Opus encoder.
+- Added support for applying per-player audio configurations.
+
+### Changed
+- Deprecated the built-in Youtube source manager. Use [youtube-source](https://github.com/lavalink-devs/youtube-source) instead.
+
 ## [1.8.0] -- 2024-03-13
 ### Fixed
 - Fixed an issue with the `SoundCloudAudioSourceManager` where it could try to decode a track with extra, custom data encoded into the base64 string.
@@ -7,7 +25,7 @@
   - Seems like this error is triggered by the use of a client version that's no longer within YouTube's "last 2 major versions" support.
 
 ### Added
-- Add `AudioPlayer#scheduleTrack(AudioTrack, boolean)`.
+- Added `AudioPlayer#scheduleTrack(AudioTrack, boolean)`.
 
 ### Changed
 - Expose `DefaultAudioPlayer#dispatchEvent()` in subclasses.
