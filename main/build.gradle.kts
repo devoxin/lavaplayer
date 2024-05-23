@@ -8,19 +8,20 @@ val moduleName = "lavaplayer"
 version = "1.9.0"
 
 dependencies {
+  val jacksonVersion = "2.17.1"
+
   api("com.sedmelluq:lava-common:1.1.2")
   implementation("com.github.devoxin:lavaplayer-natives-fork:0a17a66")
   implementation("org.mozilla:rhino-engine:1.7.14")
   api("org.slf4j:slf4j-api:1.7.25")
 
   api("org.apache.httpcomponents:httpclient:4.5.14")
-  implementation("commons-io:commons-io:2.14.0")
+  implementation("commons-io:commons-io:2.16.1")
 
-  api("com.fasterxml.jackson.core:jackson-core:2.14.2")
-  api("com.fasterxml.jackson.core:jackson-databind:2.14.2")
+  api("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+  api("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
-  implementation("org.jsoup:jsoup:1.16.2")
-
+  implementation("org.jsoup:jsoup:1.17.2")
   implementation("com.grack:nanojson:1.7")
 
   testImplementation("org.codehaus.groovy:groovy:2.5.5")
