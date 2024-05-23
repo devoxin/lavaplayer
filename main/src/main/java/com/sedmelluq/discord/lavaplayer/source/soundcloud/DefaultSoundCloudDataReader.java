@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DefaultSoundCloudDataReader implements SoundCloudDataReader {
   private static final Logger log = LoggerFactory.getLogger(DefaultSoundCloudDataReader.class);

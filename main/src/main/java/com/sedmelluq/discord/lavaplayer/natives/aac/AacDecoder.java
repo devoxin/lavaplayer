@@ -76,14 +76,6 @@ public class AacDecoder extends NativeResourceHolder {
     return objectType == SBR || objectType == PS;
   }
 
-//  private synchronized int configureRaw(long buffer) {
-//    if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN) {
-//      buffer = Long.reverseBytes(buffer);
-//    }
-//
-//    return library.configure(instance, buffer);
-//  }
-
   private static byte[] encodeConfiguration(int objectType,
                                             int frequency,
                                             int channels,
@@ -137,7 +129,7 @@ public class AacDecoder extends NativeResourceHolder {
   }
 
   /**
-   * Fill the internal decoding buffer with the bytes from the buffer. May consume less bytes than the buffer provides.
+   * Fill the internal decoding buffer with the bytes from the buffer. May consume fewer bytes than the buffer provides.
    *
    * @param buffer DirectBuffer which contains the bytes to be added. Position and limit are respected and position is
    *               updated as a result of this operation.
@@ -192,7 +184,7 @@ public class AacDecoder extends NativeResourceHolder {
 
   /**
    * @return Correct stream info. The values passed to configure method do not account for SBR and PS and detecting
-   *         these is a part of the decoding process. If there was not enough input for decoding a full frame, null is
+   *         this is a part of the decoding process. If there was not enough input for decoding a full frame, null is
    *         returned.
    * @throws IllegalStateException If the decoder result produced an unexpected error.
    */

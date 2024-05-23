@@ -390,11 +390,9 @@ public class OggPacketInputStream extends InputStream {
     // Load more segments for this packet from the next page.
     if (!loadNextNonEmptyPage()) {
       throw new IllegalStateException("Track or stream end reached within an incomplete packet.");
-    } else if (!initialisePacket()) {
-      return false;
     }
 
-    return true;
+    return initialisePacket();
   }
 
   private enum State {

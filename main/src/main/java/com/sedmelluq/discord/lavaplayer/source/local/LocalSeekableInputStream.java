@@ -70,16 +70,6 @@ public class LocalSeekableInputStream extends SeekableInputStream {
   }
 
   @Override
-  public synchronized void reset() throws IOException {
-    throw new IOException("mark/reset not supported");
-  }
-
-  @Override
-  public boolean markSupported() {
-    return false;
-  }
-
-  @Override
   public void close() throws IOException {
     try {
       channel.close();

@@ -77,7 +77,7 @@ public class FlacMetadataReader {
       byte[] textBytes = new byte[itemLength];
       dataInput.readFully(textBytes);
 
-      String text = new String(textBytes, 0, textBytes.length, CHARSET);
+      String text = new String(textBytes, CHARSET);
       String[] keyAndValue = text.split("=", 2);
 
       if (keyAndValue.length > 1) {

@@ -94,11 +94,6 @@ public class ChainedInputStream extends InputStream {
     }
   }
 
-  @Override
-  public boolean markSupported() {
-    return false;
-  }
-
   /**
    * Provider for next input stream of a chained stream.
    */

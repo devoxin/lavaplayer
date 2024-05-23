@@ -80,9 +80,4 @@ public class ResettableBoundedInputStream extends InputStream {
   public void close() throws IOException {
     // Nothing to do
   }
-
-  @Override
-  public boolean markSupported() {
-    return false;
-  }
 }

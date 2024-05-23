@@ -36,11 +36,10 @@ public class MatroskaAudioTrack extends BaseAudioTrack {
     MatroskaTrackConsumer trackConsumer = loadAudioTrack(file, localExecutor.getProcessingContext());
 
     try {
-      localExecutor.executeProcessingLoop(() -> {
-        file.provideFrames(trackConsumer);
-      }, position -> {
-        file.seekToTimecode(trackConsumer.getTrack().index, position);
-      });
+      localExecutor.executeProcessingLoop(
+          () -> file.provideFrames(trackConsumer),
+          position -> file.seekToTimecode(trackConsumer.getTrack().index, position)
+      );
     } finally {
       ExceptionTools.closeWithWarnings(trackConsumer);
     }

@@ -35,7 +35,7 @@ public class ToSplitShortAudioFilter extends ConverterAudioFilter {
 
       for (int channel = 0; channel < channelCount; channel++) {
         for (int chunkPosition = 0; chunkPosition < chunkLength; chunkPosition++) {
-          buffers[channel][chunkPosition] = floatToShort(input[channel][offset + chunkPosition]);
+          buffers[channel][chunkPosition] = floatToShort(input[channel][offset++]);
         }
       }
 

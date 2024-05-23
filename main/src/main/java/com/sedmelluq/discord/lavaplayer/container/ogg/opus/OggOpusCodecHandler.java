@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.tools.io.DirectBufferStreamBroker;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**

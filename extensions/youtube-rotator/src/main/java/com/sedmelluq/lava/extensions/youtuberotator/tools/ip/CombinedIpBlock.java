@@ -19,7 +19,7 @@ public final class CombinedIpBlock extends IpBlock {
   private final ReentrantLock lock;
 
   public CombinedIpBlock(final List<IpBlock> ipBlocks) {
-    if (ipBlocks.size() == 0)
+    if (ipBlocks.isEmpty())
       throw new IllegalArgumentException("Ip Blocks list size must be greater than zero");
     this.type = ipBlocks.get(0).getType();
     if (ipBlocks.stream().anyMatch(block -> !block.getType().equals(type)))

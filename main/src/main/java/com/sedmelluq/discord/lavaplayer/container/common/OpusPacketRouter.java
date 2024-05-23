@@ -31,7 +31,6 @@ public class OpusPacketRouter {
   private final byte[] headerBytes;
   private final MutableAudioFrame offeredFrame;
 
-  private long currentFrameDuration;
   private long currentTimecode;
   private long requestedTimecode;
   private OpusDecoder opusDecoder;
@@ -129,8 +128,7 @@ public class OpusPacketRouter {
       inputFormat = new OpusAudioDataFormat(inputChannels, inputFrequency, frameSize);
     }
 
-    currentFrameDuration = frameSize * 1000 / inputFrequency;
-    currentTimecode += currentFrameDuration;
+    currentTimecode += frameSize * 1000L / inputFrequency;
     return frameSize;
   }
 

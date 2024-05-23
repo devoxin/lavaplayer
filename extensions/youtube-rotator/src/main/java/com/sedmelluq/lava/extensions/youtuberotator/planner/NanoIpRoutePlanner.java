@@ -45,7 +45,6 @@ public final class NanoIpRoutePlanner extends AbstractRoutePlanner {
     if (ipBlock.getType() == Inet4Address.class) {
       if (remoteAddresses.l != null) {
         currentAddress = getAddress();
-        log.debug("Selected " + currentAddress.toString() + " as new outgoing ip");
         remoteAddress = remoteAddresses.l;
       } else {
         throw new HttpException("Could not resolve host");
@@ -53,7 +52,6 @@ public final class NanoIpRoutePlanner extends AbstractRoutePlanner {
     } else if (ipBlock.getType() == Inet6Address.class) {
       if (remoteAddresses.r != null) {
         currentAddress = getAddress();
-        log.debug("Selected " + currentAddress.toString() + " as new outgoing ip");
         remoteAddress = remoteAddresses.r;
       } else if (remoteAddresses.l != null) {
         remoteAddress = remoteAddresses.l;
@@ -63,6 +61,10 @@ public final class NanoIpRoutePlanner extends AbstractRoutePlanner {
       }
     } else {
       throw new HttpException("Unknown IpBlock type: " + ipBlock.getType().getCanonicalName());
+    }
+
+    if (currentAddress != null) {
+      log.debug("Selected {} as new outgoing IP", currentAddress);
     }
     return new Tuple<>(currentAddress, remoteAddress);
   }

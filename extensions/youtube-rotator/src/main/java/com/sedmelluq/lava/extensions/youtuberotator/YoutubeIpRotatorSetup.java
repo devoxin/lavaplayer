@@ -47,12 +47,6 @@ public class YoutubeIpRotatorSetup {
     return this;
   }
 
-  public YoutubeIpRotatorSetup forSource(com.sedmelluq.discord.lavaplayer.source.youtube2.YoutubeAudioSourceManager sourceManager) {
-    forConfiguration(sourceManager.getHttpInterfaceManager(), false);
-    withMainDelegateFilter(sourceManager.getHttpContextFilter());
-    return this;
-  }
-
   public YoutubeIpRotatorSetup forManager(AudioPlayerManager playerManager) {
     YoutubeAudioSourceManager sourceManager = playerManager.source(YoutubeAudioSourceManager.class);
 

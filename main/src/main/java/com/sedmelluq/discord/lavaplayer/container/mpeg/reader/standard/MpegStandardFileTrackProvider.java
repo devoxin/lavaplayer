@@ -9,10 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.io.DetachedByteChannel;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Track provider for the standard (non-fragmented) MP4 file format.
@@ -71,9 +68,9 @@ public class MpegStandardFileTrackProvider implements MpegFileTrackProvider {
         reader.seek.seek(seekInfo.chunkOffsets[currentChunk]);
 
         int[] samples = seekInfo.chunkSamples[currentChunk];
-        for (int i = 0; i < samples.length; i++) {
-          consumer.consume(channel, samples[i]);
-        }
+          for (int sample : samples) {
+              consumer.consume(channel, sample);
+          }
 
         currentChunk++;
       }
@@ -265,9 +262,7 @@ public class MpegStandardFileTrackProvider implements MpegFileTrackProvider {
       int[] chunkSampleSizes = new int[sampleCount];
 
       if (sampleSize != 0) {
-        for (int i = 0; i < sampleCount; i++) {
-          chunkSampleSizes[i] = sampleSize;
-        }
+        Arrays.fill(chunkSampleSizes, sampleSize);
       } else {
         System.arraycopy(sampleSizes, sampleOffset, chunkSampleSizes, 0, sampleCount);
       }

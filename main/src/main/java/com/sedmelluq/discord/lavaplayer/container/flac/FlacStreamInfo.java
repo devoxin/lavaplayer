@@ -41,7 +41,7 @@ public class FlacStreamInfo {
    */
   public final int channelCount;
   /**
-   * FLAC supports from 4 to 32 bits per sample. Currently the reference encoder and decoders only support up to 24 bits
+   * FLAC supports from 4 to 32 bits per sample. Currently, the reference encoder and decoders only support up to 24 bits
    * per sample.
    */
   public final int bitsPerSample;

@@ -31,8 +31,8 @@ public class PlsPlaylistContainerProbe implements MediaContainerProbe {
 
   private static final int[] PLS_HEADER = new int[] { '[', -1, 'l', 'a', 'y', 'l', 'i', 's', 't', ']' };
 
-  private static Pattern filePattern = Pattern.compile("\\s*File([0-9]+)=((?:https?|icy)://.*)\\s*");
-  private static Pattern titlePattern = Pattern.compile("\\s*Title([0-9]+)=(.*)\\s*");
+  private static final Pattern filePattern = Pattern.compile("\\s*File([0-9]+)=((?:https?|icy)://.*)\\s*");
+  private static final Pattern titlePattern = Pattern.compile("\\s*Title([0-9]+)=(.*)\\s*");
 
   @Override
   public String getName() {

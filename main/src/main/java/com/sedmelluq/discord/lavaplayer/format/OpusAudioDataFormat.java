@@ -63,9 +63,4 @@ public class OpusAudioDataFormat extends AudioDataFormat {
   public boolean equals(Object o) {
     return this == o || o != null && getClass() == o.getClass() && super.equals(o);
   }
-
-  @Override
-  public int hashCode() {
-    return super.hashCode();
-  }
 }

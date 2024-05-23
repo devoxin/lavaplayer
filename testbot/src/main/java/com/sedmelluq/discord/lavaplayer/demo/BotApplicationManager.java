@@ -113,17 +113,17 @@ public class BotApplicationManager extends ListenerAdapter {
 
       @Override
       public void commandWrongParameterType(Message message, String name, String usage, int index, String value, Class<?> expectedType) {
-        event.getTextChannel().sendMessage("Wrong argument type for command").queue();;
+        event.getTextChannel().sendMessage("Wrong argument type for command").queue();
       }
 
       @Override
       public void commandRestricted(Message message, String name) {
-        event.getTextChannel().sendMessage("Command not permitted").queue();;
+        event.getTextChannel().sendMessage("Command not permitted").queue();
       }
 
       @Override
       public void commandException(Message message, String name, Throwable throwable) {
-        event.getTextChannel().sendMessage("Command threw an exception").queue();;
+        event.getTextChannel().sendMessage("Command threw an exception").queue();
 
         log.error("Command with content {} threw an exception.", message.getContentDisplay(), throwable);
       }

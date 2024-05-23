@@ -992,7 +992,7 @@
 - Can check if playlist is a search result.
 
 ### Fixed
-- Fixed SoundCloud not working because because of SoundCloud client ID expiring.
+- Fixed SoundCloud not working because of SoundCloud client ID expiring.
 
 ## [1.1.22] - 2016-11-19
 ### Added
@@ -1077,7 +1077,7 @@
 
 ## [1.1.6] - 2016-11-03
 ### Added
-- Plain text files with an URL loaded as radio stream playlist.
+- Plain text files with a URL loaded as radio stream playlist.
 
 ### Fixed
 - Fixed SoundCloud not working due to site update.

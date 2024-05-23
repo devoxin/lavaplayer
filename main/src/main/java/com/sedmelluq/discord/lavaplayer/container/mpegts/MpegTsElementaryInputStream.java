@@ -194,7 +194,7 @@ public class MpegTsElementaryInputStream extends InputStream {
       byte[] textBytes = new byte[length];
       packetBuffer.get(textBytes);
 
-      return new String(textBytes, 0, textBytes.length, StandardCharsets.US_ASCII);
+      return new String(textBytes, StandardCharsets.US_ASCII);
     } else {
       return null;
     }

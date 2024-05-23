@@ -66,7 +66,7 @@ public final class RotatingNanoIpRoutePlanner extends AbstractRoutePlanner {
     if (ipBlock.getType() == Inet6Address.class) {
       if (remoteAddresses.r != null) {
         currentAddress = extractLocalAddress();
-        log.debug("Selected " + currentAddress.toString() + " as new outgoing ip");
+        log.debug("Selected {} as new outgoing ip", currentAddress);
         remoteAddress = remoteAddresses.r;
       } else if (remoteAddresses.l != null) {
         remoteAddress = remoteAddresses.l;

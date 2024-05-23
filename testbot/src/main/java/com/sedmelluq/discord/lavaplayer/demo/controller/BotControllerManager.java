@@ -132,7 +132,7 @@ public class BotControllerManager {
     } else if ("no".equals(value) || "false".equals(value)) {
       return false;
     } else {
-      int integerValue = Integer.valueOf(value);
+      int integerValue = Integer.parseInt(value);
 
       if (integerValue == 1) {
         return true;

@@ -44,7 +44,7 @@ public class FilterChainBuilder {
 
   /**
    * @param channelCount Number of input channels expected by the current head of the chain.
-   * @return The first chain in the filter as an universal PCM filter, or if it is not, then adds an adapter filter to
+   * @return The first chain in the filter as a universal PCM filter, or if it is not, then adds an adapter filter to
    *         the beginning and returns that.
    */
   public UniversalPcmAudioFilter makeFirstUniversal(int channelCount) {

@@ -1,6 +1,5 @@
 package com.sedmelluq.discord.lavaplayer.source.soundcloud;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

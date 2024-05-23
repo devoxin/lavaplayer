@@ -1,5 +1,6 @@
 package com.sedmelluq.discord.lavaplayer.container;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MediaContainerRegistry {
@@ -27,11 +28,7 @@ public class MediaContainerRegistry {
 
   public static MediaContainerRegistry extended(MediaContainerProbe... additional) {
     List<MediaContainerProbe> probes = MediaContainer.asList();
-
-    for (MediaContainerProbe probe : additional) {
-      probes.add(probe);
-    }
-
+    probes.addAll(Arrays.asList(additional));
     return new MediaContainerRegistry(probes);
   }
 }

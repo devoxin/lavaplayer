@@ -19,7 +19,7 @@ public class DetailMessageBuilder {
     if (value == null) {
       builder.append("<unspecified>");
     } else {
-      builder.append(value.toString());
+      builder.append(value);
     }
   }
 

@@ -82,11 +82,8 @@ public class HttpInterface implements Closeable {
             throw (Error) e;
           } else if (e instanceof RuntimeException) {
             throw (RuntimeException) e;
-          } else //noinspection ConstantConditions
-            if (e instanceof IOException) {
-            throw (IOException) e;
           } else {
-            throw new RuntimeException(e);
+            throw (IOException) e;
           }
         } else {
           ExceptionTools.rethrowErrors(e);

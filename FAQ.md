@@ -2,7 +2,7 @@
 
 ## Errors
 
-**ALWAYS** include stack traces and the track that was played (in case of an URL) when reporting an error.
+**ALWAYS** include stack traces and the track that was played (in case of a URL) when reporting an error.
 
 ### `NoSuchMethodError` and `NoClassDefFoundError`
 

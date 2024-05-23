@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -82,9 +83,7 @@ public class TrustManagerBuilder {
   }
 
   private void addFromTrustManager(X509TrustManager trustManager) {
-    for (Certificate certificate : trustManager.getAcceptedIssuers()) {
-      certificates.add(certificate);
-    }
+    certificates.addAll(Arrays.asList(trustManager.getAcceptedIssuers()));
   }
 
   private void addFromResourceList(String basePath, String listPath) throws Exception {

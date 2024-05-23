@@ -9,7 +9,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,16 +226,6 @@ public class PersistentHttpStream extends SeekableInputStream implements AutoClo
   @Override
   public int available() throws IOException {
     return internalAvailable(true);
-  }
-
-  @Override
-  public synchronized void reset() throws IOException {
-    throw new IOException("mark/reset not supported");
-  }
-
-  @Override
-  public boolean markSupported() {
-    return false;
   }
 
   @Override

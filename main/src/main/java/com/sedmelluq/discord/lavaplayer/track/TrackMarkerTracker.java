@@ -3,7 +3,6 @@ package com.sedmelluq.discord.lavaplayer.track;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.sedmelluq.discord.lavaplayer.track.TrackMarkerHandler.MarkerState.*;
 

@@ -426,7 +426,7 @@ public class MusicController implements BotController {
     }
   }
 
-  private final class FixedDispatcher implements MessageDispatcher {
+  private static final class FixedDispatcher implements MessageDispatcher {
     private final TextChannel channel;
 
     private FixedDispatcher(TextChannel channel) {

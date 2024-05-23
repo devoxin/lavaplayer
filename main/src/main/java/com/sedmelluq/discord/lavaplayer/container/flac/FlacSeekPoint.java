@@ -6,7 +6,7 @@ package com.sedmelluq.discord.lavaplayer.container.flac;
  *
  * - For placeholder points, the second and third field values are undefined.
  * - Seek points within a table must be sorted in ascending order by sample number.
- * - Seek points within a table must be unique by sample number, with the exception of placeholder points.
+ * - Seek points within a table must be unique by sample number, except placeholder points.
  * - The previous two notes imply that there may be any number of placeholder points, but they must all occur at the end
  *   of the table.
  */

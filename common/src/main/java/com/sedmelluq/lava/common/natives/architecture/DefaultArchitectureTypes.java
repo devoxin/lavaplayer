@@ -1,9 +1,6 @@
 package com.sedmelluq.lava.common.natives.architecture;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum DefaultArchitectureTypes implements ArchitectureType {
   ARM("arm", Arrays.asList("arm", "armeabi", "armv7b", "armv7l")),
@@ -11,14 +8,14 @@ public enum DefaultArchitectureTypes implements ArchitectureType {
   ARMv8_32("aarch32", Arrays.asList("armv8b", "armv8l")),
   ARMv8_64("aarch64", Arrays.asList("arm64", "aarch64", "aarch64_be", "arm64-v8a")),
 
-  MIPS_32("mips", Arrays.asList("mips")),
+  MIPS_32("mips", Collections.singletonList("mips")),
   MIPS_32_LE("mipsel", Arrays.asList("mipsel", "mipsle")),
-  MIPS_64("mips64", Arrays.asList("mips64")),
+  MIPS_64("mips64", Collections.singletonList("mips64")),
   MIPS_64_LE("mips64el", Arrays.asList("mips64el", "mips64le")),
 
   PPC_32("powerpc", Arrays.asList("ppc", "powerpc")),
   PPC_32_LE("powerpcle", Arrays.asList("ppcel", "ppcle")),
-  PPC_64("ppc64", Arrays.asList("ppc64")),
+  PPC_64("ppc64", Collections.singletonList("ppc64")),
   PPC_64_LE("ppc64le", Arrays.asList("ppc64el", "ppc64le")),
 
   X86_32("x86", Arrays.asList("x86", "i386", "i486", "i586", "i686")),
@@ -48,7 +45,7 @@ public enum DefaultArchitectureTypes implements ArchitectureType {
     return type;
   }
 
-  private static Map<String, ArchitectureType> aliasMap = createAliasMap();
+  private static final Map<String, ArchitectureType> aliasMap = createAliasMap();
 
   private static Map<String, ArchitectureType> createAliasMap() {
     Map<String, ArchitectureType> aliases = new HashMap<>();

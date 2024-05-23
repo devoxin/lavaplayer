@@ -113,9 +113,7 @@ public class MpegFragmentedFileTrackProvider implements MpegFileTrackProvider {
    * @throws IOException On read error
    */
   public void parseMovieExtended(MpegSectionInfo mvex) throws IOException {
-    reader.in(mvex).handleVersioned("trex", trex -> {
-      isFragmented = true;
-    }).run();
+    reader.in(mvex).handleVersioned("trex", trex -> isFragmented = true).run();
   }
 
   /**
@@ -167,15 +165,13 @@ public class MpegFragmentedFileTrackProvider implements MpegFileTrackProvider {
     reader.in(moof).handle("traf", traf -> {
       final MpegTrackFragmentHeader.Builder builder = new MpegTrackFragmentHeader.Builder();
 
-      reader.in(traf).handleVersioned("tfhd", tfhd -> {
-        parseTrackFragmentHeader(tfhd, builder);
-      }).handleVersioned("tfdt", tfdt -> {
-        builder.setBaseTimecode((tfdt.version == 1) ? reader.data.readLong() : reader.data.readInt());
-      }).handleVersioned("trun", trun -> {
-        if (builder.getTrackId() == trackId) {
-          parseTrackRunInfo(trun, builder);
-        }
-      }).run();
+      reader.in(traf).handleVersioned("tfhd", tfhd -> parseTrackFragmentHeader(tfhd, builder))
+          .handleVersioned("tfdt", tfdt -> builder.setBaseTimecode((tfdt.version == 1) ? reader.data.readLong() : reader.data.readInt()))
+          .handleVersioned("trun", trun -> {
+            if (builder.getTrackId() == trackId)
+              parseTrackRunInfo(trun, builder);
+          })
+          .run();
 
       if (builder.getTrackId() == trackId) {
         header.set(builder.build());

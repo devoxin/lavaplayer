@@ -164,7 +164,7 @@ public class AbandonedTrackManager {
     int total = 0;
 
     for (Adopter adopter : adopters) {
-      total += adopter.maximumAdoptions;
+      total += (int) adopter.maximumAdoptions;
     }
 
     return total;

@@ -85,7 +85,6 @@ public final class RotatingIpRoutePlanner extends AbstractRoutePlanner {
       if (remoteAddresses.l != null) {
         if (index.get().compareTo(BigInteger.ZERO) == 0 || next.get()) {
           currentAddress = extractLocalAddress();
-          log.info("Selected " + currentAddress.toString() + " as new outgoing ip");
         }
         remoteAddress = remoteAddresses.l;
       } else {
@@ -95,7 +94,6 @@ public final class RotatingIpRoutePlanner extends AbstractRoutePlanner {
       if (remoteAddresses.r != null) {
         if (index.get().compareTo(BigInteger.ZERO) == 0 || next.get()) {
           currentAddress = extractLocalAddress();
-          log.info("Selected " + currentAddress.toString() + " as new outgoing ip");
         }
         remoteAddress = remoteAddresses.r;
       } else if (remoteAddresses.l != null) {
@@ -110,6 +108,11 @@ public final class RotatingIpRoutePlanner extends AbstractRoutePlanner {
 
     if (currentAddress == null && index.get().compareTo(BigInteger.ZERO) > 0)
       currentAddress = ipBlock.getAddressAtIndex(index.get().subtract(BigInteger.ONE));
+
+    if (currentAddress != null) {
+      log.info("Selected {} as new outgoing ip", currentAddress);
+    }
+
     next.set(false);
     return new Tuple<>(currentAddress, remoteAddress);
   }
@@ -117,7 +120,7 @@ public final class RotatingIpRoutePlanner extends AbstractRoutePlanner {
   @Override
   protected void onAddressFailure(final InetAddress address) {
     if (lastFailingAddress != null && lastFailingAddress.toString().equals(address.toString())) {
-      log.warn("Address {} was already failing, not triggering next()", address.toString());
+      log.warn("Address {} was already failing, not triggering next()", address);
       return;
     }
     lastFailingAddress = address;
