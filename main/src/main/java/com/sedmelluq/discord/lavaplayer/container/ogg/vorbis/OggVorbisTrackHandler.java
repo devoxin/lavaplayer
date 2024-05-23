@@ -26,6 +26,8 @@ public class OggVorbisTrackHandler implements OggTrackHandler {
   private final float[][] channelPcmBuffers;
   private AudioPipeline downstream;
 
+  private long pendingSeek = -1;
+
   /**
    * @param packetInputStream OGG packet input stream
    * @param broker Broker for loading stream data into direct byte buffer, it has already loaded the first two packets
@@ -67,6 +69,13 @@ public class OggVorbisTrackHandler implements OggTrackHandler {
 
     downstream = AudioPipelineFactory.create(context, new PcmFormat(decoder.getChannelCount(), sampleRate));
     downstream.seekPerformed(desiredTimecode, timecode);
+
+    if (pendingSeek != -1) {
+      // slight hack but if you attempt to seek before downstream has been initialised,
+      // a NullPointerException is thrown.
+      seekToTimecode(pendingSeek);
+      pendingSeek = -1;
+    }
   }
 
   @Override
@@ -97,7 +106,12 @@ public class OggVorbisTrackHandler implements OggTrackHandler {
   @Override
   public void seekToTimecode(long timecode) {
     try {
-      downstream.seekPerformed(timecode, packetInputStream.seek(timecode));
+      // downstream may not have been initialised yet
+      if (downstream != null) {
+        downstream.seekPerformed(timecode, packetInputStream.seek(timecode));
+      } else {
+        pendingSeek = timecode;
+      }
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
