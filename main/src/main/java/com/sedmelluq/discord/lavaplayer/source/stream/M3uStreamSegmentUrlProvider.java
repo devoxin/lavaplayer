@@ -5,15 +5,24 @@ import com.sedmelluq.discord.lavaplayer.tools.ExceptionTools;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterface;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EntityUtils;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +41,7 @@ public abstract class M3uStreamSegmentUrlProvider {
 
   protected String baseUrl;
   protected SegmentInfo lastSegment;
+  protected Cipher cipher;
 
   protected M3uStreamSegmentUrlProvider() {
     this(null);
@@ -72,6 +82,7 @@ public abstract class M3uStreamSegmentUrlProvider {
   protected String getNextSegmentUrl(HttpInterface httpInterface) {
     try {
       String streamSegmentPlaylistUrl = fetchSegmentPlaylistUrl(httpInterface);
+
       if (streamSegmentPlaylistUrl == null) {
         return null;
       }
@@ -103,6 +114,25 @@ public abstract class M3uStreamSegmentUrlProvider {
     }
   }
 
+  public void initialiseCipher(HttpInterface httpInterface,
+                               String method,
+                               String uri,
+                               String iv) throws IOException {
+    try (CloseableHttpResponse httpResponse = httpInterface.execute(new HttpGet(uri))) {
+      HttpClientTools.assertSuccessWithContent(httpResponse, "retrieve cipher key");
+      cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+      byte[] cipherKey = EntityUtils.toByteArray(httpResponse.getEntity());
+      SecretKeySpec keySpec = new SecretKeySpec(cipherKey, "AES");
+      IvParameterSpec ivSpec = new IvParameterSpec(Hex.decodeHex(iv.replace("0x", "")));
+
+      cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+    } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
+             InvalidKeyException | DecoderException e) {
+        throw new RuntimeException(e);
+    }
+  }
+
   /**
    * Fetches the input stream for the next segment in the M3U stream.
    *
@@ -124,7 +154,7 @@ public abstract class M3uStreamSegmentUrlProvider {
       HttpClientTools.assertSuccessWithContent(response, "segment data URL");
 
       success = true;
-      return response.getEntity().getContent();
+      return new CipherInputStream(response.getEntity().getContent(), cipher);
     } catch (IOException e) {
       throw new RuntimeException(e);
     } finally {
@@ -147,7 +177,7 @@ public abstract class M3uStreamSegmentUrlProvider {
   }
 
   protected String getAbsoluteUrl(String url) {
-    return baseUrl + ((url.startsWith("/")) ? url : "/" + url);
+    return baseUrl + (url.startsWith("/") ? url : "/" + url);
   }
 
   protected List<ChannelStreamInfo> loadChannelStreamsList(String[] lines) {
@@ -180,8 +210,15 @@ public abstract class M3uStreamSegmentUrlProvider {
     for (String lineText : fetchResponseLines(httpInterface, new HttpGet(streamSegmentPlaylistUrl), "stream segments list")) {
       ExtendedM3uParser.Line line = ExtendedM3uParser.parseLine(lineText);
 
-      if (line.isDirective() && "EXTINF".equals(line.directiveName)) {
-        segmentInfo = line;
+      if (line.isDirective()) {
+        if ("EXTINF".equals(line.directiveName)) {
+          segmentInfo = line;
+        } else if ("EXT-X-KEY".equals(line.directiveName) && cipher == null) {
+          String method = line.directiveArguments.get("METHOD");
+          String uri = line.directiveArguments.get("URI");
+          String iv = line.directiveArguments.get("IV");
+          initialiseCipher(httpInterface, method, uri, iv);
+        }
       }
 
       if (line.isData()) {
