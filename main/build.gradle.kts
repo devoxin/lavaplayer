@@ -11,7 +11,7 @@ dependencies {
   val jacksonVersion = "2.17.1"
 
   api("com.sedmelluq:lava-common:1.1.2")
-  implementation("com.github.devoxin:lavaplayer-natives-fork:0a17a66")
+  implementation("com.github.devoxin:lavaplayer-natives-fork:2.0.0")
   implementation("org.mozilla:rhino-engine:1.7.14")
   api("org.slf4j:slf4j-api:1.7.25")
 
