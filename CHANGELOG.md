@@ -10,6 +10,8 @@
 - Fixed duration extraction for some Ogg opus files.
 - Fixed an issue where the `PcmChunkEncoder` wouldn't force `BIG_ENDIAN` byte order.
 - Fixed an issue where sometimes an error would be thrown when initialising the Twitch source manager.
+- Fixed an issue where seeking before an Ogg Vorbis track has been initialised could cause a NullPointerException.
+- Fixed a rare thread leak with track executors caused by a race condition.
 
 ### Added
 - Added basic metadata extraction for Matroska files.
