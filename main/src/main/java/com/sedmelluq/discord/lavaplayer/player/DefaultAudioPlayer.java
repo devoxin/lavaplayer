@@ -338,7 +338,11 @@ public class DefaultAudioPlayer implements AudioPlayer, TrackStateListener {
           swapped = true;
         }
 
-        dispatchEvent(new TrackEndEvent(this, track, endReason));
+        try {
+          dispatchEvent(new TrackEndEvent(this, track, endReason));
+        } finally {
+          track.stop();
+        }
 
         if (swapped && activeTrack != null) {
           dispatchEvent(new TrackStartEvent(this, activeTrack));
