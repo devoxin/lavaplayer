@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.9.0] -- Pending
+## [1.9.0] -- 2024-05-25
 ### Fixed
 - Fixed some issues with AAC decoder initialisation caused by track configuration mangling.
 - Fixed AAC decoder configuration not accounting for extended configurations with SBR and PS profiles.
