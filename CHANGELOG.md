@@ -1,5 +1,9 @@
 # Change Log
 
+## [1.9.1] -- Pending
+### Fixed
+- Fixed detection of explicit sample rate values in FLAC files.
+
 ## [1.9.0] -- 2024-05-25
 ### Fixed
 - Fixed some issues with AAC decoder initialisation caused by track configuration mangling.

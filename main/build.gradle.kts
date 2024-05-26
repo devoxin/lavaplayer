@@ -5,7 +5,7 @@ plugins {
 }
 
 val moduleName = "lavaplayer"
-version = "1.9.0"
+version = "1.9.1"
 
 dependencies {
   val jacksonVersion = "2.17.1"
