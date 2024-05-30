@@ -30,7 +30,7 @@ public class FfmpegProbe implements MediaContainerProbe {
 
     @Override
     public MediaContainerDetectionResult probe(AudioReference reference, SeekableInputStream inputStream) throws IOException {
-        if (reference.identifier.contains("\"")) {
+        if (reference.identifier.contains("\"") || reference.identifier.contains("\\")) {
             // TODO quotes need sanitising. Not dealing with this atm.
             return null;
         }
@@ -47,8 +47,9 @@ public class FfmpegProbe implements MediaContainerProbe {
         ).start();
 
         try {
-            process.waitFor(5, TimeUnit.SECONDS);
+            process.waitFor(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            process.destroyForcibly();
             throw new RuntimeException("Probing stream took too long", e);
         }
 
