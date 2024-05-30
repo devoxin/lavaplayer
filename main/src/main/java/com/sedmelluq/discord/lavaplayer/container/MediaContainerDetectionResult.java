@@ -18,7 +18,6 @@ public class MediaContainerDetectionResult {
 
   private MediaContainerDetectionResult(AudioTrackInfo trackInfo, MediaContainerProbe containerProbe,
                                        String probeSettings, AudioReference reference, String unsupportedReason) {
-
     this.trackInfo = trackInfo;
     this.containerProbe = containerProbe;
     this.probeSettings = probeSettings;
