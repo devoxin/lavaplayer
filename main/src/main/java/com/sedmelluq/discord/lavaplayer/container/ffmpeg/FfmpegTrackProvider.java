@@ -64,7 +64,7 @@ public class FfmpegTrackProvider implements Closeable {
         command.add("-hide_banner");
 
         command.add("-v");
-        command.add("-error");
+        command.add("error");
 
         command.add("-analyzeduration");
         command.add("0");
