@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class FfmpegProbe implements MediaContainerProbe {
-    private static final String FFPROBE_LOCATION = System.getenv().getOrDefault("FFPROBE_PATH", "ffmpeg");
+    private static final String FFPROBE_LOCATION = System.getenv().getOrDefault("FFPROBE_PATH", "ffprobe");
 
     @Override
     public String getName() {
