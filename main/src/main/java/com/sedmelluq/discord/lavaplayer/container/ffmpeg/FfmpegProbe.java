@@ -9,10 +9,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import com.sedmelluq.discord.lavaplayer.track.info.AudioTrackInfoBuilder;
+import com.sedmelluq.lava.common.natives.architecture.DefaultOperatingSystemTypes;
+import com.sedmelluq.lava.common.natives.architecture.OperatingSystemType;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FfmpegProbe implements MediaContainerProbe {
@@ -37,7 +40,7 @@ public class FfmpegProbe implements MediaContainerProbe {
 
         String identifier = reference.getIdentifier();
 
-        Process process = new ProcessBuilder(
+        Process process = PlatformSpecificProcessBuilder.getProcessBuilder(
             FFPROBE_LOCATION,
             "-v", "error", // only log errors
             "-of", "json", // output as json
@@ -56,7 +59,7 @@ public class FfmpegProbe implements MediaContainerProbe {
         String error = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
 
         if (!error.trim().isEmpty()) {
-            return MediaContainerDetectionResult.unsupportedFormat(this, error);
+            return MediaContainerDetectionResult.unsupportedFormat(this, error.trim());
         }
 
         JsonBrowser browser = JsonBrowser.parse(process.getInputStream());

@@ -4,11 +4,14 @@ import com.sedmelluq.discord.lavaplayer.filter.AudioPipeline;
 import com.sedmelluq.discord.lavaplayer.filter.AudioPipelineFactory;
 import com.sedmelluq.discord.lavaplayer.filter.PcmFormat;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioProcessingContext;
+import com.sedmelluq.lava.common.natives.architecture.DefaultOperatingSystemTypes;
+import com.sedmelluq.lava.common.natives.architecture.OperatingSystemType;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FfmpegTrackProvider implements Closeable {
@@ -56,15 +59,21 @@ public class FfmpegTrackProvider implements Closeable {
             this.process.destroyForcibly();
         }
 
-        ProcessBuilder builder = new ProcessBuilder(
-            FFMPEG_LOCATION,
-            "-hide_banner",
-            "-v", "error",
-            "-analyzeduration", "0",
-            "-reconnect", "1",
-            "-reconnect_delay_max", "2"
-        );
-        List<String> command = builder.command();
+        List<String> command = new ArrayList<>();
+        command.add(FFMPEG_LOCATION);
+        command.add("-hide_banner");
+
+        command.add("-v");
+        command.add("-error");
+
+        command.add("-analyzeduration");
+        command.add("0");
+
+        command.add("-reconnect");
+        command.add("1");
+
+        command.add("-reconnect_delay_max");
+        command.add("2");
 
         if (timecode != null) {
             command.add("-ss");
@@ -83,7 +92,7 @@ public class FfmpegTrackProvider implements Closeable {
         command.add("2");
         command.add("-");
 
-        this.process = builder.start();
+        this.process = PlatformSpecificProcessBuilder.getProcessBuilder(command).start();
         this.reader = process.getInputStream();
     }
 
@@ -92,6 +101,10 @@ public class FfmpegTrackProvider implements Closeable {
     public void close() throws IOException {
         if (this.process != null) {
             this.process.destroyForcibly();
+        }
+
+        if (downstream != null) {
+            downstream.close();
         }
     }
 }
