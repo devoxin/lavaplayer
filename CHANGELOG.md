@@ -3,6 +3,7 @@
 ## [1.9.1] -- Pending
 ### Fixed
 - Fixed detection of explicit sample rate values in FLAC files.
+- Fixed incorrect reading of UTF-8 characters in title and artist for Matroska files.
 
 ## [1.9.0] -- 2024-05-25
 ### Fixed
