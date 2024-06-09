@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.9.1] -- Pending
+## [1.9.1] -- 2024-06-09
 ### Fixed
 - Fixed detection of explicit sample rate values in FLAC files.
 - Fixed incorrect reading of UTF-8 characters in title and artist for Matroska files.
