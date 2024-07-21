@@ -10,6 +10,8 @@ version = "1.10.0"
 dependencies {
   val jacksonVersion = "2.17.1"
 
+  api(project(":extensions:sources"))
+
   api("com.sedmelluq:lava-common:1.1.2")
   implementation("com.github.devoxin:lavaplayer-natives-fork:2.0.0")
   implementation("org.mozilla:rhino-engine:1.7.14")
