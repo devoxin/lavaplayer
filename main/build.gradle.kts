@@ -10,7 +10,13 @@ version = "1.10.0"
 dependencies {
   val jacksonVersion = "2.17.1"
 
-  api("com.github.devoxin.lavaplayer:lavaplayer-ext-sources:28f69b4")
+  // the below system could be improved but i don't want to fight gradle so this will
+  // have to do for now.
+
+  // uncomment when building a new release of sources
+  api(project(":extensions:sources"))
+  // uncomment when bundling sources
+//  api("com.github.devoxin.lavaplayer:lavaplayer-ext-sources:28f69b4")
 
   api("com.sedmelluq:lava-common:1.1.2")
   implementation("com.github.devoxin:lavaplayer-natives-fork:2.0.0")

@@ -4,7 +4,6 @@ import com.sedmelluq.discord.lavaplayer.container.MediaContainerDescriptor;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetectionResult;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerProbe;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools;
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpInterfaceManager;
@@ -65,7 +64,7 @@ public class M3uPlaylistContainerProbe implements MediaContainerProbe {
 
     if (hlsStreamUrl != null) {
       AudioTrackInfoBuilder infoBuilder = AudioTrackInfoBuilder.create(reference, inputStream);
-      AudioReference httpReference = HttpAudioSourceManager.getAsHttpReference(reference);
+      AudioReference httpReference = AudioReference.asHttpReference(reference);
 
       if (httpReference != null) {
         return supportedFormat(this, TYPE_HLS_OUTER, infoBuilder.setIdentifier(httpReference.identifier).build());

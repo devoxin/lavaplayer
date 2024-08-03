@@ -41,6 +41,22 @@ public class AudioReference implements AudioItem, AudioTrackInfoProvider {
     this.containerDescriptor = containerDescriptor;
   }
 
+  /**
+   * Returns the given AudioReference as an HTTP audio reference, if possible.
+   * May return {@code null} if the provided AudioReference is not a valid HTTP reference.
+   * @param reference The audio reference to convert to an HTTP reference.
+   * @return The new AudioReference, or null.
+   */
+  public static AudioReference asHttpReference(AudioReference reference) {
+    if (reference.identifier.startsWith("https://") || reference.identifier.startsWith("http://")) {
+      return reference;
+    } else if (reference.identifier.startsWith("icy://")) {
+      return new AudioReference("http://" + reference.identifier.substring(6), reference.title);
+    }
+
+    return null;
+  }
+
   @Override
   public String getTitle() {
     return title;
