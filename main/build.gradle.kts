@@ -14,9 +14,9 @@ dependencies {
   // have to do for now.
 
   // uncomment when building a new release of sources
-  api(project(":extensions:sources"))
+//  api(project(":extensions:sources"))
   // uncomment when bundling sources
-//  api("com.github.devoxin.lavaplayer:lavaplayer-ext-sources:28f69b4")
+  api("com.github.devoxin.lavaplayer:lavaplayer-ext-sources:4aa5e3b")
 
   api("com.sedmelluq:lava-common:1.1.2")
   implementation("com.github.devoxin:lavaplayer-natives-fork:2.0.0")
