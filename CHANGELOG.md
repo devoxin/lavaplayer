@@ -1,5 +1,15 @@
 # Change Log
 
+## [1.10.0] -- 2025-06-18
+### Fixed
+- Persist timecode when seeking an MP3 `SoundCloudM3uAudioTrack`.
+- Avoid overwriting existing `sampleSizes` in fragmented MP4 headers.
+- Fix Vimeo playback.
+
+### Added
+- Added `EagerlyRotatingNanoIp` route planner to rotate an entire `/64` on each nanosecond clock update.
+- Added method parameter for excluding source managers from being registered in `AudioSourceManagers#registerRemoteSources`.
+
 ## [1.9.1] -- 2024-06-09
 ### Fixed
 - Fixed detection of explicit sample rate values in FLAC files.
