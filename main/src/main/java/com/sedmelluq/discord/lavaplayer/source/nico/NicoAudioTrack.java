@@ -36,10 +36,9 @@ import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -330,7 +329,7 @@ public class NicoAudioTrack extends DelegatedAudioTrack {
 
       InputStream content = HttpStreamTools.streamContent(httpInterface, new HttpGet(segment.url));
 
-      if (!skipCipher && cipher != null) {
+      if (cipher != null && !skipCipher) {
         return new CipherInputStream(content, cipher);
       }
 
