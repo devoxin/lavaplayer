@@ -1,6 +1,21 @@
 # Change Log
 
-## [1.9.0] -- Pending
+## [1.10.0] -- 2025-06-18
+### Fixed
+- Persist timecode when seeking an MP3 `SoundCloudM3uAudioTrack`.
+- Avoid overwriting existing `sampleSizes` in fragmented MP4 headers.
+- Fix Vimeo playback.
+
+### Added
+- Added `EagerlyRotatingNanoIp` route planner to rotate an entire `/64` on each nanosecond clock update.
+- Added method parameter for excluding source managers from being registered in `AudioSourceManagers#registerRemoteSources`.
+
+## [1.9.1] -- 2024-06-09
+### Fixed
+- Fixed detection of explicit sample rate values in FLAC files.
+- Fixed incorrect reading of UTF-8 characters in title and artist for Matroska files.
+
+## [1.9.0] -- 2024-05-25
 ### Fixed
 - Fixed some issues with AAC decoder initialisation caused by track configuration mangling.
 - Fixed AAC decoder configuration not accounting for extended configurations with SBR and PS profiles.
@@ -10,6 +25,8 @@
 - Fixed duration extraction for some Ogg opus files.
 - Fixed an issue where the `PcmChunkEncoder` wouldn't force `BIG_ENDIAN` byte order.
 - Fixed an issue where sometimes an error would be thrown when initialising the Twitch source manager.
+- Fixed an issue where seeking before an Ogg Vorbis track has been initialised could cause a NullPointerException.
+- Fixed a rare thread leak with track executors caused by a race condition.
 
 ### Added
 - Added basic metadata extraction for Matroska files.
