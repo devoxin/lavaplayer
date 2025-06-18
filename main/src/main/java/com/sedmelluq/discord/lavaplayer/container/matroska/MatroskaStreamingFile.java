@@ -5,6 +5,7 @@ import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -393,7 +394,7 @@ public class MatroskaStreamingFile {
       } else if (child.is(MatroskaElementType.TimecodeScale)) {
         timecodeScale = reader.asLong(child);
       } else if (child.is(MatroskaElementType.Title) && title == null) {
-        title = reader.asString(child);
+        title = reader.asString(child, StandardCharsets.UTF_8);
       }
 
       reader.skip(child);
@@ -433,9 +434,9 @@ public class MatroskaStreamingFile {
         tagName = reader.asString(child);
       } else if (child.is(MatroskaElementType.TagString)) {
         if ("title".equalsIgnoreCase(tagName) && title == null) {
-          title = reader.asString(child);
+          title = reader.asString(child, StandardCharsets.UTF_8);
         } else if ("artist".equalsIgnoreCase(tagName)) {
-          artist = reader.asString(child);
+          artist = reader.asString(child, StandardCharsets.UTF_8);
         }
       }
 

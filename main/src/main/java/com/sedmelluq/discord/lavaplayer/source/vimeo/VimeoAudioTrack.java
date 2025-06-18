@@ -47,76 +47,21 @@ public class VimeoAudioTrack extends DelegatedAudioTrack {
   @Override
   public void process(LocalAudioTrackExecutor localExecutor) throws Exception {
     try (HttpInterface httpInterface = sourceManager.getHttpInterface()) {
-      PlaybackSource playbackSource = getPlaybackSource(httpInterface);
+      JsonBrowser videoData = sourceManager.getVideoFromApi(httpInterface, trackInfo.identifier);
+      VimeoAudioSourceManager.PlaybackFormat playbackFormat = sourceManager.getPlaybackFormat(httpInterface, videoData.get("config_url").text());
 
-      log.debug("Starting Vimeo track. HLS: {}, URL: {}", playbackSource.isHls, playbackSource.url);
+      log.debug("Starting Vimeo track. HLS: {}, URL: {}", playbackFormat.isHls, playbackFormat.url);
 
-      if (playbackSource.isHls) {
+      if (playbackFormat.isHls) {
         processDelegate(
-            new HlsStreamTrack(trackInfo, extractHlsAudioPlaylistUrl(httpInterface, playbackSource.url), sourceManager.getHttpInterfaceManager(), true),
+            new HlsStreamTrack(trackInfo, extractHlsAudioPlaylistUrl(httpInterface, playbackFormat.url), sourceManager.getHttpInterfaceManager(), true),
             localExecutor
         );
       } else {
-        try (PersistentHttpStream stream = new PersistentHttpStream(httpInterface, new URI(playbackSource.url), null)) {
+        try (PersistentHttpStream stream = new PersistentHttpStream(httpInterface, new URI(playbackFormat.url), null)) {
           processDelegate(new MpegAudioTrack(trackInfo, stream), localExecutor);
         }
       }
-    }
-  }
-
-  private PlaybackSource getPlaybackSource(HttpInterface httpInterface) throws IOException {
-    JsonBrowser config = loadPlayerConfig(httpInterface);
-    if (config == null) {
-      throw new FriendlyException("Track information not present on the page.", SUSPICIOUS, null);
-    }
-
-    String trackConfigUrl = config.get("player").get("config_url").text();
-    JsonBrowser trackConfig = loadTrackConfig(httpInterface, trackConfigUrl);
-    JsonBrowser files = trackConfig.get("request").get("files");
-
-    if (!files.get("progressive").values().isEmpty()) {
-      String url = files.get("progressive").index(0).get("url").text();
-      return new PlaybackSource(url, false);
-    } else {
-      JsonBrowser hls = files.get("hls");
-      String defaultCdn = hls.get("default_cdn").text();
-      return new PlaybackSource(hls.get("cdns").get(defaultCdn).get("url").text(), true);
-    }
-  }
-
-  private static class PlaybackSource {
-    public String url;
-    public boolean isHls;
-
-    public PlaybackSource(String url, boolean isHls) {
-      this.url = url;
-      this.isHls = isHls;
-    }
-  }
-
-  private JsonBrowser loadPlayerConfig(HttpInterface httpInterface) throws IOException {
-    try (CloseableHttpResponse response = httpInterface.execute(new HttpGet(trackInfo.identifier))) {
-      int statusCode = response.getStatusLine().getStatusCode();
-
-      if (!HttpClientTools.isSuccessWithContent(statusCode)) {
-        throw new FriendlyException("Server responded with an error.", SUSPICIOUS,
-            new IllegalStateException("Response code for player config is " + statusCode));
-      }
-
-      return sourceManager.loadConfigJsonFromPageContent(IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8));
-    }
-  }
-
-  private JsonBrowser loadTrackConfig(HttpInterface httpInterface, String trackAccessInfoUrl) throws IOException {
-    try (CloseableHttpResponse response = httpInterface.execute(new HttpGet(trackAccessInfoUrl))) {
-      int statusCode = response.getStatusLine().getStatusCode();
-
-      if (!HttpClientTools.isSuccessWithContent(statusCode)) {
-        throw new FriendlyException("Server responded with an error.", SUSPICIOUS,
-            new IllegalStateException("Response code for track access info is " + statusCode));
-      }
-
-      return JsonBrowser.parse(response.getEntity().getContent());
     }
   }
 

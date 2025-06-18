@@ -33,7 +33,7 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
   private final boolean useSeekGhosting;
   private final AudioFrameBuffer frameBuffer;
   private final AtomicReference<Thread> playingThread = new AtomicReference<>();
-  private final AtomicBoolean queuedStop = new AtomicBoolean(false);
+  private final AtomicBoolean disposedOf = new AtomicBoolean(false);
   private final AtomicLong queuedSeek = new AtomicLong(-1);
   private final AtomicLong lastFrameTimecode = new AtomicLong(0);
   private final AtomicReference<AudioTrackState> state = new AtomicReference<>(AudioTrackState.INACTIVE);
@@ -56,7 +56,7 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
 
     this.audioTrack = audioTrack;
     AudioDataFormat currentFormat = configuration.getOutputFormat();
-    this.frameBuffer = configuration.getFrameBufferFactory().create(bufferDuration, currentFormat, queuedStop);
+    this.frameBuffer = configuration.getFrameBufferFactory().create(bufferDuration, currentFormat, disposedOf);
     this.processingContext = new AudioProcessingContext(configuration, frameBuffer, playerOptions, currentFormat);
     this.useSeekGhosting = useSeekGhosting;
   }
@@ -92,6 +92,13 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
       log.debug("Cleared a stray interrupt.");
     }
 
+    synchronized (actionSynchronizer) {
+      if (disposedOf.get()) {
+        log.debug("Attempt to execute executor that has been disposed of");
+        return;
+      }
+    }
+
     if (playingThread.compareAndSet(null, Thread.currentThread())) {
       log.debug("Starting to play track {} locally with listener {}", audioTrack.getInfo().identifier, listener);
 
@@ -105,7 +112,7 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
         // Temporarily clear the interrupted status so it would not disrupt listener methods.
         interrupt = findInterrupt(e);
 
-        if (interrupt != null && checkStopped()) {
+        if (interrupt != null) {
           log.debug("Track {} was interrupted outside of execution loop.", audioTrack.getIdentifier());
         } else {
           frameBuffer.setTerminateOnEmpty();
@@ -140,29 +147,16 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
   @Override
   public void stop() {
     synchronized (actionSynchronizer) {
+      disposedOf.set(true);
       Thread thread = playingThread.get();
 
       if (thread != null) {
         log.debug("Requesting stop for track {}", audioTrack.getIdentifier());
-
-        queuedStop.compareAndSet(false, true);
         thread.interrupt();
       } else {
         log.debug("Tried to stop track {} which is not playing.", audioTrack.getIdentifier());
       }
     }
-  }
-
-  /**
-   * @return True if the track has been scheduled to stop and then clears the scheduled stop bit.
-   */
-  public boolean checkStopped() {
-    if (queuedStop.compareAndSet(true, false)) {
-      state.set(AudioTrackState.STOPPING);
-      return true;
-    }
-
-    return false;
   }
 
   /**
@@ -174,23 +168,6 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
   public void waitOnEnd() throws InterruptedException {
     frameBuffer.setTerminateOnEmpty();
     frameBuffer.waitForTermination();
-  }
-
-  /**
-   * Interrupt the buffering thread, either stop or seek should have been set beforehand.
-   * @return True if there was a thread to interrupt.
-   */
-  public boolean interrupt() {
-    synchronized (actionSynchronizer) {
-      Thread thread = playingThread.get();
-
-      if (thread != null) {
-        thread.interrupt();
-        return true;
-      }
-
-      return false;
-    }
   }
 
   @Override
@@ -334,7 +311,7 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
   private boolean handlePlaybackInterrupt(InterruptedException interruption, SeekExecutor seekExecutor) {
     Thread.interrupted();
 
-    if (checkStopped()) {
+    if (disposedOf.get()) {
       markerTracker.trigger(STOPPED);
       return false;
     }
@@ -343,7 +320,7 @@ public class LocalAudioTrackExecutor implements AudioTrackExecutor {
 
     if (seekResult != SeekResult.NO_SEEK) {
       // Double-check, might have received a stop request while seeking
-      if (checkStopped()) {
+      if (disposedOf.get()) {
         markerTracker.trigger(STOPPED);
         return false;
       } else {

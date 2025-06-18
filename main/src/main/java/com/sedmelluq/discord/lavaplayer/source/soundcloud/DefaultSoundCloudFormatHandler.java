@@ -80,7 +80,7 @@ public class DefaultSoundCloudFormatHandler implements SoundCloudFormatHandler {
     }
 
     public boolean matches(SoundCloudTrackFormat format) {
-      return protocol.equals(format.getProtocol()) && format.getMimeType().contains(mimeType);
+      return protocol.equals(format.getProtocol()) && format.getMimeType().equals(mimeType);
     }
   }
 }
