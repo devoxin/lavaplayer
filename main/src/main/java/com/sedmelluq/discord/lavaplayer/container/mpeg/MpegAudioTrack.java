@@ -21,6 +21,7 @@ import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.
  */
 public class MpegAudioTrack extends BaseAudioTrack {
   private static final Logger log = LoggerFactory.getLogger(MpegAudioTrack.class);
+  private static boolean ENABLE_ALAC_DECODING = false;
 
   private final SeekableInputStream inputStream;
 
@@ -82,11 +83,19 @@ public class MpegAudioTrack extends BaseAudioTrack {
 
   private MpegTrackConsumer selectAudioTrack(List<MpegTrackInfo> tracks, AudioProcessingContext context) {
     for (MpegTrackInfo track : tracks) {
-      if ("soun".equals(track.handler) && "mp4a".equals(track.codecName)) {
-        return new MpegAacTrackConsumer(context, track);
+      if ("soun".equals(track.handler)) {
+        if ("mp4a".equals(track.codecName)) {
+          return new MpegAacTrackConsumer(context, track);
+        } else if ("alac".equals(track.codecName) && ENABLE_ALAC_DECODING) {
+          return new MpegAlacTrackConsumer(context, track);
+        }
       }
     }
 
     return null;
+  }
+
+  public static void setEnableAlacDecoding(boolean enabled) {
+    ENABLE_ALAC_DECODING = enabled;
   }
 }

@@ -76,7 +76,7 @@ public class MpegContainerProbe implements MediaContainerProbe {
 
   private MpegTrackInfo getSupportedAudioTrack(MpegFileLoader file) {
     for (MpegTrackInfo track : file.getTrackList()) {
-      if ("soun".equals(track.handler) && "mp4a".equals(track.codecName)) {
+      if ("soun".equals(track.handler) && ("mp4a".equals(track.codecName) || "alac".equals(track.codecName))) {
         return track;
       }
     }
