@@ -26,6 +26,7 @@ public class OggPacketInputStream extends InputStream {
 
   private List<OggSeekPoint> seekPoints;
   private OggPageHeader pageHeader;
+  private Integer trackSerial;
   private int bytesLeftInPacket;
   private boolean packetContinues;
   private int nextPacketSegmentIndex;
@@ -59,6 +60,7 @@ public class OggPacketInputStream extends InputStream {
     }
 
     pageHeader = null;
+    trackSerial = null;
     state = State.PACKET_BOUNDARY;
     return true;
   }
@@ -160,16 +162,40 @@ public class OggPacketInputStream extends InputStream {
       return false;
     }
 
-    if (!readPageHeader()) {
-      if (packetContinues) {
-        throw new IllegalStateException("Stream ended in the middle of a packet.");
+    while (true) {
+      if (!readPageHeader()) {
+        if (packetContinues) {
+          throw new IllegalStateException("Stream ended in the middle of a packet.");
+        }
+        return false;
       }
-      return false;
+
+      if (trackSerial == null) {
+        // The first page read for a track selects which logical stream this track follows. This is
+        // required to demultiplex files where several logical streams (e.g. Vorbis audio and Theora
+        // video) are interleaved page by page under different serial numbers.
+        trackSerial = pageHeader.streamIdentifier;
+      } else if (pageHeader.streamIdentifier != trackSerial) {
+        // This page belongs to another logical stream in a multiplexed file. Skip over its body and
+        // keep scanning for the next page that belongs to our own stream.
+        inputStream.skipFully(pageBodyLength());
+        continue;
+      }
+
+      nextPacketSegmentIndex = 0;
+      state = State.PACKET_READ;
+      return true;
+    }
+  }
+
+  private long pageBodyLength() {
+    long bodyLength = 0;
+
+    for (int i = 0; i < pageHeader.segmentCount; i++) {
+      bodyLength += segmentSizes[i];
     }
 
-    nextPacketSegmentIndex = 0;
-    state = State.PACKET_READ;
-    return true;
+    return bodyLength;
   }
 
   /**
@@ -327,7 +353,8 @@ public class OggPacketInputStream extends InputStream {
     byte[] data = new byte[(int) inputStream.getContentLength()];
     int dataLength = StreamTools.readUntilEnd(inputStream, data, 0, data.length);
 
-    List<OggSeekPoint> seekPoints = new OggPageScanner(absoluteOffset, data, dataLength).createSeekTable(sampleRate);
+    List<OggSeekPoint> seekPoints = new OggPageScanner(absoluteOffset, data, dataLength)
+        .createSeekTable(sampleRate, pageHeader.streamIdentifier);
 
     inputStream.seek(savedPosition);
     return seekPoints;
@@ -370,7 +397,7 @@ public class OggPacketInputStream extends InputStream {
     int dataLength = StreamTools.readUntilEnd(inputStream, data, 0, data.length);
 
     return new OggPageScanner(absoluteOffset, data, dataLength)
-        .scanForSizeInfo(pageHeader.byteStreamPosition, sampleRate);
+        .scanForSizeInfo(pageHeader.byteStreamPosition, sampleRate, pageHeader.streamIdentifier);
   }
 
   /**
