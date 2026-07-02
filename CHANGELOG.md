@@ -1,5 +1,19 @@
 # Change Log
 
+## [1.11.0] -- 2026-07-02
+### Fixed
+- Fixed playback position being reset to 0 when seeking Ogg tracks.
+- Fixed compatibility with some Ogg tracks that had multiple streams.
+- Fixed corrupt AAC frames causing tracks to stop during playback.
+- Fixed some corrupt MP4 tracks that would never probe correctly, causing excessive CPU usage.
+
+### Added
+- Added `isrc` and `artworkUrl` fields to `AudioTrackInfo` for compatibility with v2-style source managers. (@sqikerz)
+- Added `WMA` (v1, v2) decoding
+  - This uses a pure Java implementation, so won't have the performance of a native decoder. For this reason, support is locked behind a flag that can be enabled via `WmaAudioTrack.setEnableWmaDecoding(true);`
+- Added `ALAC` decoding
+  - This uses a pure Java implementation, so won't have the performance of a native decoder. For this reason, support is locked behind a flag that can be enabled via `MpegAudioTrack.setEnableAlacDecoding(true);`
+
 ## [1.10.0] -- 2025-06-18
 ### Fixed
 - Persist timecode when seeking an MP3 `SoundCloudM3uAudioTrack`.
