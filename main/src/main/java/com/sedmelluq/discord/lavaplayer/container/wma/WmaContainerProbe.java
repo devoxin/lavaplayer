@@ -35,6 +35,10 @@ public class WmaContainerProbe implements MediaContainerProbe {
 
   @Override
   public MediaContainerDetectionResult probe(AudioReference reference, SeekableInputStream inputStream) throws IOException {
+    if (!WmaAudioTrack.getEnableWmaDecoding()) {
+      return null;
+    }
+
     if (!checkNextBytes(inputStream, WmaFileLoader.ASF_GUID)) {
       return null;
     }
