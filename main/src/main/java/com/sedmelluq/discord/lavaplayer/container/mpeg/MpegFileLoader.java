@@ -240,10 +240,14 @@ public class MpegFileLoader {
       }
     }
 
-    MpegSectionInfo esds = reader.nextChild(codec);
+    MpegSectionInfo child = reader.nextChild(codec);
 
-    if (esds != null && "esds".equals(esds.type)) {
-      trackInfo.setDecoderConfig(parseDecoderConfig(esds));
+    if (child != null) {
+      if ("esds".equals(child.type)) {
+        trackInfo.setDecoderConfig(parseDecoderConfig(child));
+      } else if ("alac".equals(child.type)) {
+        trackInfo.setDecoderConfig(parseAlacConfig(child));
+      }
     }
   }
 
@@ -285,6 +289,13 @@ public class MpegFileLoader {
     byte[] decoderConfig = new byte[decoderConfigLength];
     reader.data.readFully(decoderConfig);
     return decoderConfig;
+  }
+
+  private byte[] parseAlacConfig(MpegSectionInfo alacBox) throws IOException {
+    reader.parseFlags(alacBox); // version (0) + flags (0x000000)
+    byte[] config = new byte[24]; // ALACSpecificConfig is exactly 24 bytes
+    reader.data.readFully(config);
+    return config;
   }
 
   private void parseEventMessage(MpegSectionInfo emsg) throws IOException {
