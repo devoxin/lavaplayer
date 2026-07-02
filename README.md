@@ -72,11 +72,14 @@ The file formats that LavaPlayer can currently handle are (relevant for file/url
 * MP3
 * FLAC
 * WAV (PCM signed `16`/`24`/`32`-bit little-endian)
-* Matroska/WebM (AAC, Opus or Vorbis codecs)
-* MP4/M4A (AAC codec)
+* Matroska/WebM (AAC, Opus and Vorbis codecs)
+* MP4/M4A (AAC and ALAC[^1] codecs)
+* WMA[^1] (v1, v2)
 * OGG streams (Opus, Vorbis and FLAC codecs)
 * AAC streams
 * Stream playlists (M3U and PLS)
+
+[^1]: Locked behind a boolean toggle, as these rely on pure Java decoder implementations. Check out the respective container's `*AudioTrack.java` files to set the feature flag to `true`.
 
 ## Resource usage
 
