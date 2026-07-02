@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.SUSPICIOUS;
 
@@ -27,7 +28,6 @@ public class OggAudioTrack extends BaseAudioTrack {
    */
   public OggAudioTrack(AudioTrackInfo trackInfo, SeekableInputStream inputStream) {
     super(trackInfo);
-
     this.inputStream = inputStream;
   }
 
@@ -43,20 +43,28 @@ public class OggAudioTrack extends BaseAudioTrack {
     }
 
     OggTrackHandler handler = blueprint.loadTrackHandler(packetInputStream);
+    AtomicBoolean initialised = new AtomicBoolean(false);
     localExecutor.executeProcessingLoop(() -> {
       try {
-        processTrackLoop(packetInputStream, localExecutor.getProcessingContext(), handler, blueprint);
+        processTrackLoop(packetInputStream, localExecutor.getProcessingContext(), handler, blueprint, initialised);
       } catch (IOException e) {
         throw new FriendlyException("Stream broke when playing OGG track.", SUSPICIOUS, e);
       }
     }, handler::seekToTimecode, true);
   }
 
-  private void processTrackLoop(OggPacketInputStream packetInputStream, AudioProcessingContext context, OggTrackHandler handler, OggTrackBlueprint blueprint) throws IOException, InterruptedException {
+  private void processTrackLoop(OggPacketInputStream packetInputStream, AudioProcessingContext context, OggTrackHandler handler, OggTrackBlueprint blueprint, AtomicBoolean initialised) throws IOException, InterruptedException {
     while (blueprint != null) {
-      handler.initialise(context, 0, 0);
+      // fix: only initialise once to avoid resetting the reported playback position
+      if (initialised.compareAndSet(false, true)) {
+        handler.initialise(context, 0, 0);
+      }
+
       handler.provideFrames();
       blueprint = OggTrackLoader.loadTrackBlueprint(packetInputStream);
+
+      // Reset initialised state so the next chained stream can be initialised.
+      initialised.set(false);
     }
   }
 }
