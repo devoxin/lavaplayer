@@ -33,7 +33,11 @@ public class AudioPipelineFactory {
     int inputChannels = inputFormat.channelCount;
     int outputChannels = context.outputFormat.channelCount;
 
-    UniversalPcmAudioFilter end = new FinalPcmAudioFilter(context, createPostProcessors(context));
+    // Position is derived from source audio consumed at the input sample rate so that duration-changing
+    // filters (e.g. timescale) do not desync it.
+    PipelinePositionTracker positionTracker = new PipelinePositionTracker(inputFormat.sampleRate);
+
+    UniversalPcmAudioFilter end = new FinalPcmAudioFilter(context, createPostProcessors(context), positionTracker);
     FilterChainBuilder builder = new FilterChainBuilder();
     builder.addFirst(end);
 
@@ -52,7 +56,7 @@ public class AudioPipelineFactory {
           builder.makeFirstUniversal(outputChannels)));
     }
 
-    return new AudioPipeline(builder.build(null, inputChannels));
+    return new AudioPipeline(builder.build(null, inputChannels), positionTracker, inputChannels);
   }
 
   private static Collection<AudioPostProcessor> createPostProcessors(AudioProcessingContext context) {

@@ -20,25 +20,24 @@ public class FinalPcmAudioFilter implements UniversalPcmAudioFilter {
   private final AudioDataFormat format;
   private final ShortBuffer frameBuffer;
   private final Collection<AudioPostProcessor> postProcessors;
+  private final PipelinePositionTracker positionTracker;
 
   private long ignoredFrames;
-  private long timecodeBase;
-  private long timecodeSampleOffset;
 
   /**
    * @param context Configuration and output information for processing
    * @param postProcessors Post processors to pass the final audio buffers to
+   * @param positionTracker Tracker which derives the playback timecode from consumed source audio
    */
-  public FinalPcmAudioFilter(AudioProcessingContext context, Collection<AudioPostProcessor> postProcessors) {
+  public FinalPcmAudioFilter(AudioProcessingContext context, Collection<AudioPostProcessor> postProcessors,
+                             PipelinePositionTracker positionTracker) {
     this.format = context.outputFormat;
     this.frameBuffer = ByteBuffer
         .allocateDirect(format.totalSampleCount() * 2)
         .order(ByteOrder.nativeOrder())
         .asShortBuffer();
     this.postProcessors = postProcessors;
-
-    timecodeBase = 0;
-    timecodeSampleOffset = 0;
+    this.positionTracker = positionTracker;
   }
 
   private short decodeSample(float sample) {
@@ -49,8 +48,7 @@ public class FinalPcmAudioFilter implements UniversalPcmAudioFilter {
   public void seekPerformed(long requestedTime, long providedTime) {
     frameBuffer.clear();
     ignoredFrames = requestedTime > providedTime ? (requestedTime - providedTime) * format.channelCount * format.sampleRate / 1000L : 0;
-    timecodeBase = Math.max(requestedTime, providedTime);
-    timecodeSampleOffset = 0;
+    positionTracker.seekPerformed(requestedTime, providedTime);
 
     if (ignoredFrames > 0) {
       log.debug("Ignoring {} frames due to inaccurate seek (requested {}, provided {}).", ignoredFrames, requestedTime, providedTime);
@@ -151,7 +149,7 @@ public class FinalPcmAudioFilter implements UniversalPcmAudioFilter {
 
   private void dispatch() throws InterruptedException {
     if (!frameBuffer.hasRemaining()) {
-      long timecode = timecodeBase + timecodeSampleOffset * 1000 / format.sampleRate;
+      long timecode = positionTracker.currentTimecode();
       frameBuffer.clear();
 
       for (AudioPostProcessor postProcessor : postProcessors) {
@@ -159,8 +157,6 @@ public class FinalPcmAudioFilter implements UniversalPcmAudioFilter {
       }
 
       frameBuffer.clear();
-
-      timecodeSampleOffset += format.chunkSampleCount;
     }
   }
 }
