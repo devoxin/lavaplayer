@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.container.playlists.M3uPlaylistContainer
 import com.sedmelluq.discord.lavaplayer.container.playlists.PlainPlaylistContainerProbe;
 import com.sedmelluq.discord.lavaplayer.container.playlists.PlsPlaylistContainerProbe;
 import com.sedmelluq.discord.lavaplayer.container.wav.WavContainerProbe;
+import com.sedmelluq.discord.lavaplayer.container.wma.WmaContainerProbe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,8 @@ public enum MediaContainer {
   PLAIN(new PlainPlaylistContainerProbe()),
   MP3(new Mp3ContainerProbe()),
   ADTS(new AdtsContainerProbe()),
-  MPEGADTS(new MpegAdtsContainerProbe());
+  MPEGADTS(new MpegAdtsContainerProbe()),
+  WMA(new WmaContainerProbe());
 
   /**
    * The probe used to detect files using this container and create the audio tracks for them.

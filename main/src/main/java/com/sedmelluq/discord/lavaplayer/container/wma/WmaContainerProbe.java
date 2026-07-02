@@ -1,9 +1,8 @@
-package com.sedmelluq.discord.lavaplayer.container.mpeg;
+package com.sedmelluq.discord.lavaplayer.container.wma;
 
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerDetectionResult;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerHints;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerProbe;
-import com.sedmelluq.discord.lavaplayer.container.mpeg.reader.MpegFileTrackProvider;
 import com.sedmelluq.discord.lavaplayer.tools.io.SeekableInputStream;
 import com.sedmelluq.discord.lavaplayer.track.AudioReference;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -19,16 +18,14 @@ import static com.sedmelluq.discord.lavaplayer.container.MediaContainerDetection
 import static com.sedmelluq.discord.lavaplayer.container.MediaContainerDetectionResult.unsupportedFormat;
 
 /**
- * Container detection probe for MP4 format.
+ * Container detection probe for WMA (ASF) format.
  */
-public class MpegContainerProbe implements MediaContainerProbe {
-  private static final Logger log = LoggerFactory.getLogger(MpegContainerProbe.class);
-
-  private static final int[] ISO_TAG = new int[] { 0x00, 0x00, 0x00, -1, 0x66, 0x74, 0x79, 0x70 };
+public class WmaContainerProbe implements MediaContainerProbe {
+  private static final Logger log = LoggerFactory.getLogger(WmaContainerProbe.class);
 
   @Override
   public String getName() {
-    return "mp4";
+    return "wma";
   }
 
   @Override
@@ -38,32 +35,29 @@ public class MpegContainerProbe implements MediaContainerProbe {
 
   @Override
   public MediaContainerDetectionResult probe(AudioReference reference, SeekableInputStream inputStream) throws IOException {
-    if (!checkNextBytes(inputStream, ISO_TAG)) {
+    if (!WmaAudioTrack.getEnableWmaDecoding()) {
       return null;
     }
 
-    log.debug("Track {} is an MP4 file.", reference.identifier);
-
-    MpegFileLoader file = new MpegFileLoader(inputStream);
-    file.parseHeaders();
-
-    MpegTrackInfo audioTrack = getSupportedAudioTrack(file);
-
-    if (audioTrack == null) {
-      return unsupportedFormat(this, "No supported audio format in the MP4 file.");
+    if (!checkNextBytes(inputStream, WmaFileLoader.ASF_GUID)) {
+      return null;
     }
 
-    MpegTrackConsumer trackConsumer = new MpegNoopTrackConsumer(audioTrack);
-    MpegFileTrackProvider fileReader = file.loadReader(trackConsumer);
+    log.debug("Track {} is a WMA (ASF) file.", reference.identifier);
 
-    if (fileReader == null) {
-      return unsupportedFormat(this, "MP4 file uses an unsupported format.");
+    WmaFileLoader file = new WmaFileLoader(inputStream);
+
+    WmaStreamInfo streamInfo;
+    try {
+      streamInfo = file.parseHeaders();
+    } catch (IllegalStateException e) {
+      return unsupportedFormat(this, e.getMessage());
     }
 
     AudioTrackInfo trackInfo = AudioTrackInfoBuilder.create(reference, inputStream)
         .setTitle(file.getTextMetadata("Title"))
-        .setAuthor(file.getTextMetadata("Artist"))
-        .setLength(fileReader.getDuration())
+        .setAuthor(file.getTextMetadata("Author"))
+        .setLength(streamInfo.duration)
         .build();
 
     return supportedFormat(this, null, trackInfo);
@@ -71,16 +65,6 @@ public class MpegContainerProbe implements MediaContainerProbe {
 
   @Override
   public AudioTrack createTrack(String parameters, AudioTrackInfo trackInfo, SeekableInputStream inputStream) {
-    return new MpegAudioTrack(trackInfo, inputStream);
-  }
-
-  private MpegTrackInfo getSupportedAudioTrack(MpegFileLoader file) {
-    for (MpegTrackInfo track : file.getTrackList()) {
-      if ("soun".equals(track.handler) && ("mp4a".equals(track.codecName) || "alac".equals(track.codecName))) {
-        return track;
-      }
-    }
-
-    return null;
+    return new WmaAudioTrack(trackInfo, inputStream);
   }
 }
