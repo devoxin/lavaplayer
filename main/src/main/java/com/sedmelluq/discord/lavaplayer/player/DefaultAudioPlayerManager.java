@@ -35,6 +35,7 @@ import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.
 public class DefaultAudioPlayerManager implements AudioPlayerManager {
   private static final int TRACK_INFO_VERSIONED = 1;
   private static final int TRACK_INFO_VERSION = 2;
+  private static final int TRACK_INFO_EXTENDED_VERSION = 2;
 
   private static final int DEFAULT_FRAME_BUFFER_DURATION = (int) TimeUnit.SECONDS.toMillis(5);
   private static final int DEFAULT_CLEANUP_THRESHOLD = (int) TimeUnit.MINUTES.toMillis(1);
@@ -220,7 +221,15 @@ public class DefaultAudioPlayerManager implements AudioPlayerManager {
   @Override
   public void encodeTrack(MessageOutput stream, AudioTrack track) throws IOException {
     DataOutput output = stream.startMessage();
-    output.write(TRACK_INFO_VERSION);
+
+    AudioTrackInfo info = track.getInfo();
+    boolean isV3Track = info.isrc != null || info.artworkUrl != null;
+    // This is still Lavaplayer v1 for all intents and purposes.
+    // If we have an isrc or artworkUrl (from a v2-oriented source manager),
+    // then we'll go into 'compatibility mode' and just write v3 fields anyway.
+    // otherwise, we'll revert to writing v2 info to avoid writing longer encoded track strings.
+    // all this to save a couple bytes, I'm too stubborn to just blanket-write v3 track strings hah
+    output.write(isV3Track ? TRACK_INFO_EXTENDED_VERSION : TRACK_INFO_VERSION);
 
     AudioTrackInfo trackInfo = track.getInfo();
     output.writeUTF(trackInfo.title);
@@ -229,6 +238,11 @@ public class DefaultAudioPlayerManager implements AudioPlayerManager {
     output.writeUTF(trackInfo.identifier);
     output.writeBoolean(trackInfo.isStream);
     DataFormatTools.writeNullableText(output, trackInfo.uri);
+
+    if (isV3Track) {
+      DataFormatTools.writeNullableText(output, trackInfo.artworkUrl);
+      DataFormatTools.writeNullableText(output, trackInfo.isrc);
+    }
 
     encodeTrackDetails(track, output);
     output.writeLong(track.getPosition());
