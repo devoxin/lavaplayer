@@ -245,8 +245,17 @@ public class DefaultAudioPlayerManager implements AudioPlayerManager {
 
     int version = (stream.getMessageFlags() & TRACK_INFO_VERSIONED) != 0 ? (input.readByte() & 0xFF) : 1;
 
-    AudioTrackInfo trackInfo = new AudioTrackInfo(input.readUTF(), input.readUTF(), input.readLong(), input.readUTF(),
-        input.readBoolean(), version >= 2 ? DataFormatTools.readNullableText(input) : null);
+    AudioTrackInfo trackInfo = new AudioTrackInfo(
+        input.readUTF(),
+        input.readUTF(),
+        input.readLong(),
+        input.readUTF(),
+        input.readBoolean(),
+        version >= 2 ? DataFormatTools.readNullableText(input) : null,
+        version >= 3 ? DataFormatTools.readNullableText(input) : null,
+        version >= 3 ? DataFormatTools.readNullableText(input) : null
+    );
+
     AudioTrack track = decodeTrackDetails(trackInfo, input);
     long position = input.readLong();
 
