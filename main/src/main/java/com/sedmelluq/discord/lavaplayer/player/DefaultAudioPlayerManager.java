@@ -35,7 +35,7 @@ import static com.sedmelluq.discord.lavaplayer.tools.FriendlyException.Severity.
 public class DefaultAudioPlayerManager implements AudioPlayerManager {
   private static final int TRACK_INFO_VERSIONED = 1;
   private static final int TRACK_INFO_VERSION = 2;
-  private static final int TRACK_INFO_EXTENDED_VERSION = 2;
+  private static final int TRACK_INFO_EXTENDED_VERSION = 3;
 
   private static final int DEFAULT_FRAME_BUFFER_DURATION = (int) TimeUnit.SECONDS.toMillis(5);
   private static final int DEFAULT_CLEANUP_THRESHOLD = (int) TimeUnit.MINUTES.toMillis(1);
